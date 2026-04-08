@@ -168,7 +168,7 @@
     }
 
     btnValidasi.addEventListener('click', async () => {
-        const tokenValue = inputToken.value.trim();
+        const tokenValue = inputToken.value.trim().toUpperCase();
 
         if (!tokenValue) {
             statusToken.innerHTML = "Harap masukkan token!";
