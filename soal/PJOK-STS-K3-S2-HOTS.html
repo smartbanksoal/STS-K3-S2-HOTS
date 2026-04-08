@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis PJOK Kelas 3 - HOTS</title>
+    <style>
+        /* Desain Umum dan Keamanan */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            user-select: none; /* Anti block/copy */
+        }
+        
+        /* Header */
+        header {
+            background-color: #fff;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #ff4757;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        /* Container Utama */
+        .container {
+            flex: 1;
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            width: 90%;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .login-screen h2 {
+            color: #2f3542;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 15px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        
+        /* Tombol */
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+        .btn-mulai { background-color: #2ed573; color: white; width: 100%; max-width: 400px; }
+        .btn-mulai:hover { background-color: #26ae60; }
+        .btn-home { background-color: #3742fa; color: white; width: 100%; max-width: 400px; margin-bottom: 20px;}
+        .btn-home:hover { background-color: #5352ed; }
+        .btn-nav { background-color: #1e90ff; color: white; }
+        .btn-nav:hover { background-color: #3742fa; }
+        .btn-nav:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        /* History Skor */
+        .history-section {
+            width: 100%;
+            margin-top: 30px;
+        }
+        .history-section h3 {
+            text-align: center;
+            color: #2f3542;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th { background-color: #f1f2f6; }
+
+        /* Area Kuis */
+        .quiz-screen { display: none; }
+        .skor-sementara {
+            text-align: right;
+            font-weight: bold;
+            color: #ffa502;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        .soal-container {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed #ddd;
+        }
+        .soal-text { font-size: 1.2rem; margin-bottom: 15px; font-weight: 600;}
+        .soal-gambar {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+        }
+        .gambar-caption {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        /* Pilihan Jawaban */
+        .opsi-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .opsi-btn {
+            background-color: #f1f2f6;
+            border: 2px solid #dfe4ea;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+        .opsi-btn:hover { background-color: #dfe4ea; }
+        .opsi-btn.benar { background-color: #2ed573 !important; color: white; border-color: #2ed573; }
+        .opsi-btn.salah { background-color: #ff4757 !important; color: white; border-color: #ff4757; }
+        .opsi-btn:disabled { cursor: not-allowed; }
+
+        /* Pembahasan */
+        .pembahasan {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #eccc68;
+            border-radius: 8px;
+            color: #2f3542;
+            font-weight: 500;
+        }
+
+        /* Navigasi Soal */
+        .nav-soal {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1e272e;
+            color: #d2dae2;
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+        footer a {
+            color: #4bcffa;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <header>Kode Soal: PJOK-STS-K3-S2-HOTS</header>
+
+    <div class="container">
+        <div id="loginScreen" class="login-screen">
+            <h2>Selamat Datang di Kuis PJOK</h2>
+            <div class="input-group">
+                <input type="text" id="namaLengkap" placeholder="Masukkan Nama Lengkap" required>
+            </div>
+            <div class="input-group">
+                <input type="text" id="kelasSiswa" placeholder="Masukkan Kelas" required>
+            </div>
+            <button class="btn btn-mulai" onclick="mulaiKuis()">Mulai Kuis</button>
+            <a href="../index.html" class="btn btn-home">Kembali ke Home</a>
+
+            <div class="history-section">
+                <h3>Riwayat Skor</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Kelas</th>
+                            <th>Skor</th>
+                            <th>Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="quizScreen" class="quiz-screen">
+            <div class="skor-sementara" id="skorDisplay">Skor Sementara: 0</div>
+            
+            <div class="soal-container">
+                <div id="soalText" class="soal-text"></div>
+                <img id="soalGambar" class="soal-gambar" style="display:none;" src="" alt="Gambar Soal">
+                <div id="gambarCaption" class="gambar-caption" style="display:none;"></div>
+                
+                <div class="opsi-list" id="opsiList"></div>
+                <div class="pembahasan" id="pembahasanBox"></div>
+            </div>
+
+            <div class="nav-soal">
+                <button class="btn btn-nav" id="btnPrev" onclick="soalSebelumnya()" disabled>Sebelumnya</button>
+                <button class="btn btn-nav" id="btnNext" onclick="soalSelanjutnya()">Selanjutnya</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; <span id="tahunFooter"></span> Oleh: Dwi Endrasto<br>
+        Produk ini asli jika didapatkan/dibeli melalui <a href="https://lynk.id/smartbanksoal" target="_blank">https://lynk.id/smartbanksoal</a>
+    </footer>
+
+    <script>
+        // PROTEKSI KEAMANAN
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('copy', event => {
+            event.preventDefault();
+            alert('Fitur copy dinonaktifkan.');
+        });
+        document.addEventListener('paste', event => event.preventDefault());
+
+        // FOOTER TAHUN OTOMATIS
+        document.getElementById('tahunFooter').innerText = new Date().getFullYear();
+
+        // KUNCI STORAGE ANTI BENTROK
+        const STORAGE_KEY = 'quiz_history_PJOK_STS_K3_S2_HOTS';
+
+        // DATABASE SOAL (25 Soal, 5 Bergambar, 4 Kata per Opsi)
+        const bankSoal = [
+            {
+                image: "gambar/renang-napas.jpg",
+                imageCaption: "Gambar 1: Posisi mengambil napas renang gaya dada.",
+                question: "Berdasarkan gambar, teknik pernapasan gaya dada yang aman dilakukan agar tidak tersedak adalah...",
+                options: [
+                    "Mengangkat kepala ke atas.", 
+                    "Menundukkan kepala ke bawah.", 
+                    "Menengok ke arah samping.", 
+                    "Memutar kepala ke belakang."
+                ],
+                answer: "Mengangkat kepala ke atas.",
+                explanation: "Pembahasan: Pada renang gaya dada, kepala diangkat sejajar ke atas permukaan air saat mengambil napas."
+            },
+            {
+                image: "gambar/lompat-mendarat.jpg",
+                imageCaption: "Gambar 2: Anak melakukan pendaratan setelah melompat.",
+                question: "Sesuai gambar tersebut, tindakan yang tepat untuk mencegah terjadinya cedera lutut saat mendarat adalah...",
+                options: [
+                    "Mengeperkan kedua lutut kaki.", 
+                    "Meluruskan kedua lutut kaki.", 
+                    "Menjatuhkan badan ke depan.", 
+                    "Bertumpu pada satu kaki."
+                ],
+                answer: "Mengeperkan kedua lutut kaki.",
+                explanation: "Pembahasan: Gerakan mengeper (menekuk lutut sedikit) berguna meredam benturan sehingga lutut tidak cedera."
+            },
+            {
+                image: "gambar/senam-simpai.jpg",
+                imageCaption: "Gambar 3: Gerakan senam irama menggunakan alat simpai.",
+                question: "Gambar menunjukkan gerakan mengayun simpai. Manfaat utama kelenturan tubuh saat melakukan ayunan ini adalah...",
+                options: [
+                    "Menjaga keseimbangan postur tubuh.", 
+                    "Melatih kekuatan otot kaki.", 
+                    "Meningkatkan kecepatan lari cepat.", 
+                    "Membuat badan menjadi kaku."
+                ],
+                answer: "Menjaga keseimbangan postur tubuh.",
+                explanation: "Pembahasan: Kelenturan membantu menjaga keseimbangan dan keindahan gerakan ritmik tanpa terjatuh."
+            },
+            {
+                image: "gambar/roll-depan.jpg",
+                imageCaption: "Gambar 4: Siswa mempraktikkan gerakan guling ke depan.",
+                question: "Siswa sering jatuh menyamping pada gerakan ini. Penyebab utama hilangnya keseimbangan saat mengguling adalah...",
+                options: [
+                    "Tumpuan tangan tidak seimbang.", 
+                    "Mata melihat ke depan.", 
+                    "Badan didorong sangat kuat.", 
+                    "Lutut ditekuk terlalu dalam."
+                ],
+                answer: "Tumpuan tangan tidak seimbang.",
+                explanation: "Pembahasan: Jika tumpuan kedua tangan tidak sama kuat, badan otomatis akan terguling ke arah samping."
+            },
+            {
+                image: "gambar/lari-zigzag.jpg",
+                imageCaption: "Gambar 5: Latihan lari berbelok-belok melewati kerucut.",
+                question: "Anak dalam gambar sedang berlatih. Tujuan mengubah arah saat berlari pada latihan tersebut adalah...",
+                options: [
+                    "Melatih tingkat kelincahan tubuh.", 
+                    "Menambah kekuatan otot leher.", 
+                    "Mengurangi daya tahan tubuh.", 
+                    "Melatih tingkat kelenturan jari."
+                ],
+                answer: "Melatih tingkat kelincahan tubuh.",
+                explanation: "Pembahasan: Lari zig-zag melatih kelincahan (agility), yaitu kemampuan mengubah arah tubuh dengan cepat."
+            },
+            {
+                question: "Saat berenang di kolam, Andi merasa kakinya kram. Tindakan penyelamatan diri yang paling tepat adalah...",
+                options: [
+                    "Tetap tenang meminta tolong.", 
+                    "Memaksa kaki terus berenang.", 
+                    "Menyelam ke dasar kolam.", 
+                    "Menangis sambil memejamkan mata."
+                ],
+                answer: "Tetap tenang meminta tolong.",
+                explanation: "Pembahasan: Panik akan membuat tubuh tenggelam. Tetap tenang mengapung dan meminta bantuan adalah kunci keselamatan."
+            },
+            {
+                question: "Senam irama diiringi lagu riang. Jika tempo musik dipercepat, penyesuaian gerakan yang benar adalah...",
+                options: [
+                    "Mempercepat hitungan langkah kaki.", 
+                    "Memperlambat hitungan langkah kaki.", 
+                    "Menghentikan semua gerakan tubuh.", 
+                    "Duduk diam di lantai."
+                ],
+                answer: "Mempercepat hitungan langkah kaki.",
+                explanation: "Pembahasan: Senam irama harus selaras dengan musik. Musik cepat berarti gerak juga harus dipercepat."
+            },
+            {
+                question: "Budi ingin memiliki jantung sehat. Latihan kebugaran yang harus dilakukan Budi secara rutin adalah...",
+                options: [
+                    "Berlari santai mengelilingi lapangan.", 
+                    "Tidur siang sepanjang hari.", 
+                    "Membaca buku di kamar.", 
+                    "Menonton televisi sambil duduk."
+                ],
+                answer: "Berlari santai mengelilingi lapangan.",
+                explanation: "Pembahasan: Lari santai (jogging) melatih kardiovaskular sehingga kerja jantung menjadi lebih kuat dan sehat."
+            },
+            {
+                question: "Siti melakukan peregangan sebelum senam. Alasan Siti wajib melakukan pemanasan dengan benar adalah...",
+                options: [
+                    "Mencegah terjadinya cedera otot.", 
+                    "Membuat tubuh terasa lelah.", 
+                    "Menurunkan suhu panas tubuh.", 
+                    "Mengurangi nilai ujian senam."
+                ],
+                answer: "Mencegah terjadinya cedera otot.",
+                explanation: "Pembahasan: Pemanasan menyiapkan otot agar lentur, aliran darah lancar, sehingga terhindar dari kram atau cedera."
+            },
+            {
+                question: "Edo berlatih keseimbangan berdiri satu kaki. Posisi kedua tangan yang membantu menstabilkan tubuh adalah...",
+                options: [
+                    "Merentangkan kedua lengan tangan.", 
+                    "Menyilangkan tangan di dada.", 
+                    "Menyembunyikan tangan di saku.", 
+                    "Memegang kedua lutut kaki."
+                ],
+                answer: "Merentangkan kedua lengan tangan.",
+                explanation: "Pembahasan: Merentangkan tangan berfungsi sebagai penyeimbang titik berat badan agar tubuh tidak oleng."
+            },
+            {
+                question: "Dalam senam ketangkasan, mendarat setelah melompat kotak harus sempurna. Kriteria pendaratan yang baik adalah...",
+                options: [
+                    "Menjaga keseimbangan tanpa jatuh.", 
+                    "Berguling jauh ke depan.", 
+                    "Melompat lagi ke atas.", 
+                    "Terduduk lemas di matras."
+                ],
+                answer: "Menjaga keseimbangan tanpa jatuh.",
+                explanation: "Pembahasan: Pendaratan yang baik ditandai dengan kontrol tubuh yang stabil, lutut mengeper, dan tidak jatuh."
+            },
+            {
+                question: "Berjalan di atas balok titian membutuhkan konsentrasi. Fokus pandangan mata yang paling tepat adalah...",
+                options: [
+                    "Melihat lurus ke depan.", 
+                    "Melihat ke arah penonton.", 
+                    "Melihat ke atas langit.", 
+                    "Melihat terus ke belakang."
+                ],
+                answer: "Melihat lurus ke depan.",
+                explanation: "Pembahasan: Menatap lurus ke depan membantu otak mengatur orientasi tubuh sehingga keseimbangan tetap terjaga."
+            },
+            {
+                question: "Luka lecet sering terjadi saat berolahraga. Langkah pertolongan pertama yang paling higienis adalah...",
+                options: [
+                    "Membersihkan luka dengan air.", 
+                    "Mengoleskan kecap pada luka.", 
+                    "Menutup luka dengan daun.", 
+                    "Meniup luka sangat keras."
+                ],
+                answer: "Membersihkan luka dengan air.",
+                explanation: "Pembahasan: Air bersih mengalir menghilangkan kotoran dan kuman sebelum diberi obat antiseptik pada luka."
+            },
+            {
+                question: "Penyakit menular mudah menyerang saat tubuh kotor. Kebiasaan penting setelah berolahraga di lapangan adalah...",
+                options: [
+                    "Mandi menggunakan sabun bersih.", 
+                    "Langsung tidur di kasur.", 
+                    "Memakai baju olahraga terus.", 
+                    "Makan tanpa mencuci tangan."
+                ],
+                answer: "Mandi menggunakan sabun bersih.",
+                explanation: "Pembahasan: Mandi mengangkat keringat dan kuman yang menempel di kulit, mencegah gatal dan penyakit menular."
+            },
+            {
+                question: "Cuaca panas menyebabkan tubuh kehilangan cairan. Untuk mencegah dehidrasi saat berolahraga, kita harus...",
+                options: [
+                    "Minum air putih cukup.", 
+                    "Minum es sirup manis.", 
+                    "Tidak minum air sama.", 
+                    "Makan makanan sangat pedas."
+                ],
+                answer: "Minum air putih cukup.",
+                explanation: "Pembahasan: Air putih menggantikan cairan tubuh yang keluar lewat keringat lebih efektif dan sehat daripada minuman manis."
+            },
+            {
+                question: "Berenang di tempat dangkal lebih aman bagi pemula. Bahaya utama berenang di tempat dalam adalah...",
+                options: [
+                    "Risiko tenggelam sangat tinggi.", 
+                    "Airnya terasa lebih dingin.", 
+                    "Airnya terasa lebih hangat.", 
+                    "Terlalu banyak ikan berenang."
+                ],
+                answer: "Risiko tenggelam sangat tinggi.",
+                explanation: "Pembahasan: Pemula belum bisa mengapung lama. Tempat dalam membuat kaki tidak bisa memijak dasar saat kelelahan."
+            },
+            {
+                question: "Irama *waltz* dalam senam menggunakan hitungan ketukan. Jumlah hitungan per langkah yang digunakan adalah...",
+                options: [
+                    "Satu dua dan tiga.", 
+                    "Satu dan dua saja.", 
+                    "Satu dua tiga empat.", 
+                    "Satu sampai angka sepuluh."
+                ],
+                answer: "Satu dua dan tiga.",
+                explanation: "Pembahasan: Irama waltz memiliki pola ketukan 3/4, sehingga hitungannya berpusat pada hitungan satu, dua, tiga."
+            },
+            {
+                question: "Posisi tubuh mengambang telungkup sangat penting dalam renang. Gerakan ini sering dikenal dengan istilah...",
+                options: [
+                    "Meluncur di permukaan air.", 
+                    "Menyelam di dasar air.", 
+                    "Berjalan di dalam air.", 
+                    "Melompat dari pinggir kolam."
+                ],
+                answer: "Meluncur di permukaan air.",
+                explanation: "Pembahasan: Mengambang telungkup dengan dorongan awal dari dinding kolam adalah teknik dasar meluncur dalam renang."
+            },
+            {
+                question: "Penyakit influenza mudah menular lewat udara. Cara mencegah penularannya saat berinteraksi dengan teman adalah...",
+                options: [
+                    "Memakai masker penutup mulut.", 
+                    "Meminjam sapu tangan teman.", 
+                    "Bersin di depan teman.", 
+                    "Berbagi botol air minum."
+                ],
+                answer: "Memakai masker penutup mulut.",
+                explanation: "Pembahasan: Masker menahan percikan air liur (droplet) yang membawa virus saat batuk, bicara, atau bersin."
+            },
+            {
+                question: "Setelah berlari cepat, jantung berdetak kencang. Gerakan pendinginan bertujuan untuk mengembalikan fungsi tubuh dengan...",
+                options: [
+                    "Menormalkan kembali denyut jantung.", 
+                    "Meningkatkan suhu panas tubuh.", 
+                    "Membuat napas menjadi sesak.", 
+                    "Membuat otot menjadi kaku."
+                ],
+                answer: "Menormalkan kembali denyut jantung.",
+                explanation: "Pembahasan: Pendinginan menurunkan detak jantung dan suhu tubuh secara bertahap menuju kondisi istirahat (normal)."
+            },
+            {
+                question: "Lompat tali bermanfaat untuk kebugaran tubuh. Komponen fisik yang paling banyak dilatih adalah...",
+                options: [
+                    "Daya ledak otot kaki.", 
+                    "Kekuatan otot telapak tangan.", 
+                    "Kelenturan tulang leher kepala.", 
+                    "Kecepatan ayunan lengan bawah."
+                ],
+                answer: "Daya ledak otot kaki.",
+                explanation: "Pembahasan: Lompat tali membutuhkan tolakan kaki secara berulang, melatih power (daya ledak) otot tungkai."
+            },
+            {
+                question: "Senam lantai sering menggunakan matras empuk. Tujuan penggunaan matras dalam olahraga ini adalah...",
+                options: [
+                    "Menghindari benturan lantai keras.", 
+                    "Membuat tubuh menjadi licin.", 
+                    "Menghasilkan suara pantulan keras.", 
+                    "Menghias ruang gedung olahraga."
+                ],
+                answer: "Menghindari benturan lantai keras.",
+                explanation: "Pembahasan: Matras menyerap energi benturan tubuh saat berguling atau jatuh, sehingga melindungi tulang dan persendian."
+            },
+            {
+                question: "Gerak lokomotor berpindah tempat sangat beragam bentuknya. Contoh gerak lokomotor pada permainan bola adalah...",
+                options: [
+                    "Berlari mengejar arah bola.", 
+                    "Menolehkan kepala ke samping.", 
+                    "Mengayunkan lengan memukul bola.", 
+                    "Meliukkan pinggang saat melempar."
+                ],
+                answer: "Berlari mengejar arah bola.",
+                explanation: "Pembahasan: Berlari mengubah posisi tubuh dari satu titik ke titik lain, itulah definisi gerak lokomotor."
+            },
+            {
+                question: "Sikap pesawat terbang membutuhkan ketenangan pikiran. Jika tidak fokus, tubuh akan kehilangan kontrol dan...",
+                options: [
+                    "Goyah lalu cepat terjatuh.", 
+                    "Terbang jauh ke atas.", 
+                    "Berputar dengan sangat cepat.", 
+                    "Melompat tinggi ke udara."
+                ],
+                answer: "Goyah lalu cepat terjatuh.",
+                explanation: "Pembahasan: Keseimbangan statis butuh fokus. Pikiran teralihkan membuat koordinasi otot melemah sehingga tubuh mudah goyah."
+            },
+            {
+                question: "Demam berdarah disebarkan oleh gigitan nyamuk. Mencegah perkembangbiakan nyamuk di sekolah dapat dilakukan dengan...",
+                options: [
+                    "Menguras genangan bak air.", 
+                    "Menanam banyak pohon besar.", 
+                    "Membakar tumpukan kertas bekas.", 
+                    "Mengecat tembok warna putih."
+                ],
+                answer: "Menguras genangan bak air.",
+                explanation: "Pembahasan: Nyamuk Aedes aegypti berkembang biak di genangan air bersih. Menguras bak memutus siklus hidup nyamuk."
+            }
+        ];
+
+        // VARIABEL STATE
+        let namaUser = '';
+        let kelasUser = '';
+        let skor = 0;
+        let soalTeracak = [];
+        let indexSoal = 0;
+        let jawabanUser = [];
+        let waktuMulai = null;
+
+        // FUNGSI PENGACAK ARRAY (Fisher-Yates)
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // INIT LOAD HISTORY
+        window.onload = function() {
+            tampilkanHistory();
+        }
+
+        // MULAI KUIS
+        function mulaiKuis() {
+            const elNama = document.getElementById('namaLengkap').value.trim();
+            const elKelas = document.getElementById('kelasSiswa').value.trim();
+
+            if (!elNama || !elKelas) {
+                alert("Harap isi Nama Lengkap dan Kelas terlebih dahulu!");
+                return;
+            }
+
+            namaUser = elNama;
+            kelasUser = elKelas;
+            waktuMulai = new Date();
+
+            // 3. RESET VARIABEL SECARA MENYELURUH (Deep Copy)
+            soalTeracak = JSON.parse(JSON.stringify(bankSoal)); 
+            soalTeracak = shuffleArray(soalTeracak);
+            
+            // Acak opsi jawaban tepat satu kali saat kuis dimulai
+            soalTeracak.forEach(soal => {
+                soal.options = shuffleArray(soal.options);
+            });
+
+            indexSoal = 0;
+            skor = 0;
+            jawabanUser = new Array(soalTeracak.length).fill(null);
+
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'block';
+
+            updateSkorDisplay();
+            tampilkanSoal();
+        }
+
+        // TAMPILKAN SOAL
+        function tampilkanSoal() {
+            const dataSoal = soalTeracak[indexSoal];
+            
+            // Render Teks Soal
+            document.getElementById('soalText').innerText = `Soal ${indexSoal + 1} dari ${soalTeracak.length}: ${dataSoal.question}`;
+
+            // Render Gambar jika ada
+            const imgEl = document.getElementById('soalGambar');
+            const capEl = document.getElementById('gambarCaption');
+            if (dataSoal.image) {
+                imgEl.src = dataSoal.image;
+                imgEl.style.display = 'block';
+                capEl.innerText = dataSoal.imageCaption || '';
+                capEl.style.display = 'block';
+            } else {
+                imgEl.style.display = 'none';
+                capEl.style.display = 'none';
+            }
+
+            // Render Opsi
+            const opsiListEl = document.getElementById('opsiList');
+            opsiListEl.innerHTML = '';
+            
+            dataSoal.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'opsi-btn';
+                btn.innerText = opt;
+                
+                // SISTEM FLAGGING & READ-ONLY
+                if (jawabanUser[indexSoal] !== null) {
+                    btn.disabled = true;
+                    if (opt === dataSoal.answer) {
+                        btn.classList.add('benar');
+                    } else if (opt === jawabanUser[indexSoal].jawab && !jawabanUser[indexSoal].isBenar) {
+                        btn.classList.add('salah');
+                    }
+                } else {
+                    btn.onclick = () => pilihJawaban(btn, opt, dataSoal.answer, dataSoal.explanation);
+                }
+                
+                opsiListEl.appendChild(btn);
+            });
+
+            // Pembahasan
+            const pembahasanBox = document.getElementById('pembahasanBox');
+            if (jawabanUser[indexSoal] !== null) {
+                pembahasanBox.innerText = dataSoal.explanation;
+                pembahasanBox.style.display = 'block';
+            } else {
+                pembahasanBox.style.display = 'none';
+            }
+
+            // Navigasi
+            document.getElementById('btnPrev').disabled = (indexSoal === 0);
+            
+            const btnNext = document.getElementById('btnNext');
+            if (indexSoal === soalTeracak.length - 1) {
+                btnNext.innerText = "Selesai & Simpan";
+                btnNext.classList.replace('btn-nav', 'btn-mulai'); // Warna hijau
+            } else {
+                btnNext.innerText = "Selanjutnya";
+                btnNext.classList.replace('btn-mulai', 'btn-nav');
+            }
+        }
+
+        // PILIH JAWABAN
+        function pilihJawaban(btnEl, jawabanDipilih, jawabanBenar, pembahasan) {
+            // 1. SISTEM FLAGGING: Tolak klik jika soal ini sudah tercatat dijawab
+            if (jawabanUser[indexSoal] !== null) return;
+
+            const isBenar = (jawabanDipilih === jawabanBenar);
+
+            // Simpan jejak jawaban ke dalam memori objek
+            jawabanUser[indexSoal] = {
+                jawab: jawabanDipilih,
+                isBenar: isBenar
+            };
+
+            // Hitung ulang dan update tampilan skor
+            updateSkorDisplay();
+
+            // Kunci interaksi tombol
+            const semuaBtn = document.querySelectorAll('.opsi-btn');
+            semuaBtn.forEach(b => {
+                b.disabled = true;
+                if (b.innerText === jawabanBenar) {
+                    b.classList.add('benar');
+                } else if (b.innerText === jawabanDipilih && !isBenar) {
+                    b.classList.add('salah');
+                }
+            });
+
+            // Tampilkan pembahasan
+            const pembahasanBox = document.getElementById('pembahasanBox');
+            pembahasanBox.innerText = pembahasan;
+            pembahasanBox.style.display = 'block';
+        }
+
+        // FUNGSI UPDATE SKOR BARU
+        function updateSkorDisplay() {
+            // 4. PERHITUNGAN BERBASIS PERSENTASE
+            const jumlahBenar = jawabanUser.filter(j => j !== null && j.isBenar).length;
+            const skorHitung = (jumlahBenar / soalTeracak.length) * 100;
+            
+            // 2. LIMITER: Kunci maksimal di 100
+            skor = Math.min(Math.round(skorHitung), 100);
+            
+            document.getElementById('skorDisplay').innerText = `Skor Sementara: ${skor}`;
+        }
+
+        // NAVIGASI
+        function soalSebelumnya() {
+            if (indexSoal > 0) {
+                indexSoal--;
+                tampilkanSoal();
+            }
+        }
+
+        function soalSelanjutnya() {
+            if (jawabanUser[indexSoal] === null) {
+                alert("Silakan pilih jawaban terlebih dahulu!");
+                return;
+            }
+
+            if (indexSoal < soalTeracak.length - 1) {
+                indexSoal++;
+                tampilkanSoal();
+            } else {
+                selesaikanKuis();
+            }
+        }
+
+        // SELESAI
+        function selesaikanKuis() {
+            const waktuSelesai = new Date();
+            const stringWaktu = `${waktuSelesai.getDate()}/${waktuSelesai.getMonth()+1}/${waktuSelesai.getFullYear()} ${waktuSelesai.getHours()}:${String(waktuSelesai.getMinutes()).padStart(2, '0')}`;
+
+            const riwayatBaru = {
+                nama: namaUser,
+                kelas: kelasUser,
+                skor: skor,
+                waktu: stringWaktu
+            };
+
+            let dataHistory = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            dataHistory.push(riwayatBaru);
+            
+            // Limitasi array memori browser (misal 50 terbaru)
+            if (dataHistory.length > 50) dataHistory.shift();
+            
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(dataHistory));
+
+            alert(`Selamat ${namaUser}! Kuis selesai.\nSkor Akhir Anda: ${skor}`);
+            
+            window.location.reload();
+        }
+
+        // TAMPILKAN HISTORY
+        function tampilkanHistory() {
+            const dataHistory = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            const tbody = document.getElementById('historyTableBody');
+            tbody.innerHTML = '';
+
+            if (dataHistory.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4">Belum ada riwayat skor.</td></tr>';
+                return;
+            }
+
+            // Menampilkan riwayat terbaru di atas
+            dataHistory.slice().reverse().forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row.nama}</td>
+                    <td>${row.kelas}</td>
+                    <td><strong style="color: #2ed573;">${row.skor}</strong></td>
+                    <td>${row.waktu}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>

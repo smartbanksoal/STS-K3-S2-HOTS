@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis PAI Kelas 3 - STS</title>
+    <style>
+        /* CSS & Styling */
+        :root {
+            --primary: #4a90e2;
+            --secondary: #ff6b6b;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            /* Proteksi Anti Copy/Select */
+            user-select: none; 
+            -webkit-user-select: none;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), #8e44ad);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* Login Screen (Menarik dan warna-warni) */
+        #login-screen {
+            text-align: center;
+        }
+        
+        .login-title {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus { border-color: var(--primary); }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            color: white;
+            margin: 5px;
+        }
+
+        .btn-start { background-color: var(--success); width: 95%; margin-top: 15px; }
+        .btn-start:hover { background-color: #27ae60; }
+        
+        .btn-home { background-color: var(--primary); width: 95%; margin-bottom: 20px;}
+        .btn-home:hover { background-color: #3b78c2; }
+
+        .btn-nav { background-color: var(--primary); }
+        .btn-nav:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+
+        /* Kuis Screen */
+        #quiz-screen, #result-screen { display: none; }
+        
+        .question-header { display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: bold; color: var(--dark); }
+        .question-text { font-size: 1.2rem; margin-bottom: 20px; line-height: 1.5; }
+        
+        .image-container { text-align: center; margin-bottom: 15px; }
+        .image-container img { max-width: 100%; height: auto; border-radius: 8px; max-height: 250px; }
+        .image-caption { font-size: 0.9rem; color: #7f8c8d; font-style: italic; }
+
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn {
+            background-color: var(--light);
+            color: var(--dark);
+            border: 2px solid #ddd;
+            text-align: left;
+            padding: 15px;
+            font-weight: normal;
+            font-family: inherit;
+            cursor: pointer;
+        }
+        .option-btn:hover:not(:disabled) { background-color: #e0e6ed; }
+        .option-btn:disabled { cursor: not-allowed; }
+        .option-btn.correct { background-color: var(--success) !important; color: white !important; border-color: var(--success) !important; }
+        .option-btn.wrong { background-color: var(--danger) !important; color: white !important; border-color: var(--danger) !important; }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 20px; }
+
+        /* Riwayat Skor */
+        .history-container { margin-top: 20px; text-align: left; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+        th { background-color: var(--primary); color: white; }
+
+        /* Footer */
+        footer {
+            background-color: #1a1a1a;
+            color: #ccc;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9rem;
+        }
+        footer a { color: var(--primary); text-decoration: none; font-weight: bold; }
+        footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <header>
+        Kode Soal: PAI-STS-K3-S2-HOTS
+    </header>
+
+    <main>
+        <div class="container" id="login-screen">
+            <h2 class="login-title">🌟 Kuis Interaktif PAI 🌟<br>Sumatif Tengah Semester</h2>
+            <input type="text" id="input-nama" placeholder="Masukkan Nama Lengkap" autocomplete="off">
+            <input type="text" id="input-kelas" placeholder="Masukkan Kelas (Contoh: 3A)" autocomplete="off">
+            
+            <button class="btn-start" onclick="startQuiz()">Mulai Kuis Sekarang!</button>
+            <button class="btn-home" onclick="goToHome()">Kembali ke Home</button>
+
+            <div class="history-container">
+                <h3>📜 Riwayat Skor Tertinggi</h3>
+                <table>
+                    <thead>
+                        <tr><th>Nama</th><th>Kelas</th><th>Skor</th><th>Waktu</th></tr>
+                    </thead>
+                    <tbody id="history-table">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="container" id="quiz-screen">
+            <div class="question-header">
+                <span id="q-counter">Soal 1/25</span>
+                <span id="score-live">Skor Sementara: 0</span>
+            </div>
+            
+            <div class="image-container" id="q-image-container" style="display: none;">
+                <img id="q-image" src="" alt="Gambar Soal">
+                <div class="image-caption" id="q-image-caption"></div>
+            </div>
+
+            <div class="question-text" id="q-text">Pertanyaan akan muncul di sini...</div>
+            
+            <div class="options" id="q-options">
+                </div>
+
+            <div class="explanation" id="q-explanation">
+                <strong>Pembahasan:</strong> <span id="explain-text"></span>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn-nav" id="btn-prev" onclick="prevQuestion()" disabled>⬅ Sebelumnya</button>
+                <button class="btn-nav" id="btn-next" onclick="nextQuestion()" style="display:none;">Selanjutnya ➡</button>
+            </div>
+        </div>
+
+        <div class="container" id="result-screen" style="text-align: center;">
+            <h2>🎉 Kuis Selesai! 🎉</h2>
+            <h1 id="final-score" style="font-size: 4rem; color: var(--success); margin: 20px 0;">100</h1>
+            <p id="result-message" style="font-size: 1.2rem; margin-bottom: 20px;"></p>
+            <button class="btn-home" onclick="location.reload()">Selesai & Kembali</button>
+        </div>
+    </main>
+
+    <footer>
+        <span id="year"></span> Oleh: Dwi Endrasto, Produk ini asli jika didapatkan/dibeli melalui <br>
+        <a href="https://lynk.id/smartbanksoal" target="_blank">https://lynk.id/smartbanksoal</a>
+    </footer>
+
+    <script>
+        // Set Tahun Otomatis
+        document.getElementById("year").innerText = "@" + new Date().getFullYear();
+
+        // Keamanan: Anti Copy Paste & Keyboard Shortcuts
+        document.addEventListener('keydown', function(e) {
+            if(e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 'i' || e.key === 'v' || e.key === 's')) {
+                e.preventDefault();
+            }
+        });
+
+        /* --- DATABASE SOAL (25 Soal HOTS) --- */
+        const bankSoal = [
+            // 5 SOAL BERGAMBAR
+            {
+                q: "Ahmad melihat ayahnya sedang salat sendirian di rumah. Ahmad segera berwudu dan berdiri di belakang ayahnya. Apa pesan utama tindakan Ahmad?",
+                image: "gambar/salat-jamaah.jpg",
+                imageAlt: "Gambar anak mengikuti ayah salat",
+                options: ["Mencari perhatian orang tuanya", "Mendapatkan pahala dua puluh tujuh", "Menghindari tugas belajar malam", "Menunggu waktu makan bersama"],
+                answer: "Mendapatkan pahala dua puluh tujuh",
+                explanation: "Pesan pokok salat berjamaah adalah mendapatkan keutamaan pahala 27 derajat dibanding salat sendirian."
+            },
+            {
+                q: "Budi ditunjuk menjadi imam karena bacaan Al-Qur'annya paling fasih. Temannya yang lebih tua tidak marah. Syarat utama menjadi imam adalah...",
+                image: "gambar/imam-salat.jpg",
+                imageAlt: "Gambar seorang imam memimpin salat",
+                options: ["Memiliki baju yang paling bagus", "Memiliki suara yang sangat keras", "Paham ilmu agama dan fasih", "Paling kaya di antara temannya"],
+                answer: "Paham ilmu agama dan fasih",
+                explanation: "Syarat menjadi imam utamanya adalah fasih membaca Al-Qur'an dan paham tata cara salat."
+            },
+            {
+                q: "Saat liburan, Siti melihat pemandangan gunung yang sangat indah. Siti kagum pada ciptaan Allah. Kalimah tayibah apa yang tepat diucapkan Siti?",
+                image: "gambar/gunung-indah.jpg",
+                imageAlt: "Gambar pemandangan gunung indah",
+                options: ["Mengucapkan kalimah tayibah subhanallah segera", "Mengucapkan kalimah tayibah masyaallah segera", "Mengucapkan kalimah tayibah alhamdulillah segera", "Mengucapkan kalimah tayibah astagfirullah segera"],
+                answer: "Mengucapkan kalimah tayibah masyaallah segera",
+                explanation: "Masyaallah diucapkan ketika melihat sesuatu yang indah atau menakjubkan ciptaan Allah."
+            },
+            {
+                q: "Nabi Daud a.s. menerima kitab suci untuk kaumnya. Kitab ini berisi nyanyian pujian kepada Allah. Kitab apakah yang dimaksud?",
+                image: "gambar/kitab-suci.jpg",
+                imageAlt: "Gambar ilustrasi kitab suci",
+                options: ["Kitab suci Zabur dari Allah", "Kitab suci Taurat dari Allah", "Kitab suci Injil dari Allah", "Kitab suci Alquran dari Allah"],
+                answer: "Kitab suci Zabur dari Allah",
+                explanation: "Kitab Zabur diturunkan kepada Nabi Daud a.s. yang berisi mazmur atau pujian kepada Allah."
+            },
+            {
+                q: "Dina berjanji akan datang ke rumah Nisa besok sore untuk belajar kelompok. Agar janjinya diridai Allah, kalimah apa yang diucapkan?",
+                image: "gambar/anak-berjanji.jpg",
+                imageAlt: "Gambar anak bersalaman mengikat janji",
+                options: ["Dina harus mengucapkan lafaz Insyaallah", "Dina harus mengucapkan lafaz Subhanallah", "Dina harus mengucapkan lafaz Masyaallah", "Dina harus mengucapkan lafaz Allahuakbar"],
+                answer: "Dina harus mengucapkan lafaz Insyaallah",
+                explanation: "Insyaallah berarti 'jika Allah menghendaki', diucapkan saat kita merencanakan sesuatu di masa depan."
+            },
+            // 20 SOAL TANPA GAMBAR
+            {
+                q: "Seseorang yang beriman kepada kitab Allah akan selalu menjadikan Al-Qur'an sebagai pedoman. Bagaimana contoh penerapan perilaku tersebut di sekolah?",
+                options: ["Membaca Alquran saat jam istirahat", "Menyimpan Alquran di dalam tas", "Membawa Alquran untuk pamer teman", "Mewarnai Alquran dengan spidol baru"],
+                answer: "Membaca Alquran saat jam istirahat",
+                explanation: "Penerapan iman kepada kitab Allah adalah dengan membaca, mempelajari, dan mengamalkannya dalam kehidupan sehari-hari."
+            },
+            {
+                q: "Allah menurunkan kitab Taurat kepada Nabi Musa a.s. untuk membimbing Bani Israil. Tujuan utama diturunkannya kitab tersebut adalah agar...",
+                options: ["Manusia hidup di jalan lurus", "Manusia bisa cepat menjadi kaya", "Manusia mampu mengalahkan musuh musuhnya", "Manusia dapat membangun rumah megah"],
+                answer: "Manusia hidup di jalan lurus",
+                explanation: "Kitab Allah diturunkan sebagai petunjuk agar manusia hidup di jalan yang lurus dan diridai Allah."
+            },
+            {
+                q: "Ketika mendengar suara petir yang sangat menggelegar, kita disunahkan mengingat kebesaran Allah. Kalimah yang tepat kita lafalkan pada saat itu adalah...",
+                options: ["Lafaz kalimah tayibah bacaan Subhanallah", "Lafaz kalimah tayibah bacaan Alhamdulillah", "Lafaz kalimah tayibah bacaan Insyaallah", "Lafaz kalimah tayibah bacaan Masyaallah"],
+                answer: "Lafaz kalimah tayibah bacaan Subhanallah",
+                explanation: "Subhanallah (Maha Suci Allah) diucapkan saat mendengar/melihat sesuatu yang menakutkan atau hal yang tidak baik."
+            },
+            {
+                q: "Budi menolak beriman kepada kitab-kitab sebelum Al-Qur'an karena merasa sudah tidak zaman. Akibat buruk dari sikap Budi tersebut adalah...",
+                options: ["Imannya kepada Allah tidak sempurna", "Budi akan menjadi sangat miskin", "Budi akan dijauhi teman temannya", "Nilai ujian Budi menjadi jelek"],
+                answer: "Imannya kepada Allah tidak sempurna",
+                explanation: "Rukun iman ke-3 adalah beriman kepada kitab-kitab Allah. Menolaknya membuat iman seseorang tidak sah/sempurna."
+            },
+            {
+                q: "Pada malam takbiran Idul Fitri, umat Islam menggemakan asma Allah. Kalimah tayibah yang berarti 'Allah Maha Besar' adalah...",
+                options: ["Membaca kalimah tayibah lafaz Allahuakbar", "Membaca kalimah tayibah lafaz Subhanallah", "Membaca kalimah tayibah lafaz Insyaallah", "Membaca kalimah tayibah lafaz Masyaallah"],
+                answer: "Membaca kalimah tayibah lafaz Allahuakbar",
+                explanation: "Allahu Akbar artinya Allah Maha Besar, sering dilafalkan saat azan, salat, dan malam hari raya."
+            },
+            {
+                q: "Syarat sah salat berjamaah adalah adanya imam dan makmum. Jika makmum berada di depan imam, maka hukum salat berjamaahnya adalah...",
+                options: ["Salatnya menjadi batal tidak sah", "Salatnya tetap sah dan sempurna", "Salatnya mendapat pahala sangat banyak", "Salatnya harus diulang besok pagi"],
+                answer: "Salatnya menjadi batal tidak sah",
+                explanation: "Posisi makmum tidak boleh mendahului (berada di depan) imam. Jika terjadi, salat berjamaahnya tidak sah."
+            },
+            {
+                q: "Rasulullah saw. bersabda bahwa salat berjamaah lebih utama 27 derajat. Mengapa Islam sangat menganjurkan umatnya untuk salat berjamaah di masjid?",
+                options: ["Untuk mempererat tali silaturahmi umat", "Untuk memamerkan baju baru kita", "Untuk mencari pujian tetangga sekitar", "Untuk mengobrol bersama teman teman"],
+                answer: "Untuk mempererat tali silaturahmi umat",
+                explanation: "Selain pahala, hikmah salat berjamaah adalah mempererat persaudaraan (ukhuwah islamiyah) antar sesama muslim."
+            },
+            {
+                q: "Rukun iman ketiga mengajarkan kita beriman kepada kitab Allah. Kitab yang diturunkan kepada Nabi Isa a.s. sebagai penyempurna Taurat adalah...",
+                options: ["Kitab suci Injil yang mulia", "Kitab suci Zabur yang mulia", "Kitab suci Taurat yang mulia", "Kitab suci Alquran yang mulia"],
+                answer: "Kitab suci Injil yang mulia",
+                explanation: "Kitab Injil diturunkan kepada Nabi Isa a.s. pada abad ke-1 Masehi."
+            },
+            {
+                q: "Kalimah Insyaallah memiliki arti 'Jika Allah menghendaki'. Sikap yang benar setelah mengucapkan Insyaallah saat berjanji adalah...",
+                options: ["Berusaha sekuat tenaga menepati janji", "Melupakan janji yang telah dibuat", "Membatalkan janji tanpa alasan jelas", "Menyuruh orang lain menepati janji"],
+                answer: "Berusaha sekuat tenaga menepati janji",
+                explanation: "Mengucapkan Insyaallah bukan alasan untuk ingkar janji, melainkan bentuk tawakal setelah berusaha menepatinya."
+            },
+            {
+                q: "Rio melihat taman bunga yang bermekaran sangat rapi di sekolah. Penerapan kalimah tayibah yang tepat sesuai kondisi Rio adalah mengucapkan...",
+                options: ["Masyaallah karena kagum ciptaan Allah", "Subhanallah karena takut azab Allah", "Allahuakbar karena sedang waktu salat", "Insyaallah karena ingin menanam bunga"],
+                answer: "Masyaallah karena kagum ciptaan Allah",
+                explanation: "Masyaallah diucapkan ketika melihat keindahan, sebagai pengakuan bahwa semua itu terjadi atas kehendak Allah."
+            },
+            {
+                q: "Seorang imam salat batal wudunya di pertengahan salat. Tindakan yang harus dilakukan agar salat jamaah tetap sah adalah...",
+                options: ["Makmum di belakang maju menggantikan", "Semua makmum membatalkan salat bersama", "Imam terus memimpin salat jamaah", "Makmum menunggu imam berwudu lagi"],
+                answer: "Makmum di belakang maju menggantikan",
+                explanation: "Jika imam batal, maka makmum yang posisinya tepat di belakang imam (badal) harus maju menggantikannya."
+            },
+            {
+                q: "Iman kepada kitab Allah berarti meyakini sepenuh hati bahwa Allah telah menurunkan wahyu. Pengertian meyakini dengan sepenuh hati ini disebut...",
+                options: ["Sikap tasdiq di dalam hati", "Sikap takabur di dalam hati", "Sikap suuzan di dalam hati", "Sikap riya di dalam hati"],
+                answer: "Sikap tasdiq di dalam hati",
+                explanation: "Beriman (tasdiq) artinya membenarkan dengan hati, diucapkan dengan lisan, dan diamalkan dengan perbuatan."
+            },
+            {
+                q: "Nabi Musa a.s. memimpin Bani Israil keluar dari Mesir. Beliau menerima kitab suci di Bukit Sinai. Kitab tersebut adalah...",
+                options: ["Wahyu kitab Taurat dari Allah", "Wahyu kitab Zabur dari Allah", "Wahyu kitab Injil dari Allah", "Wahyu kitab Alquran dari Allah"],
+                answer: "Wahyu kitab Taurat dari Allah",
+                explanation: "Kitab Taurat diturunkan kepada Nabi Musa a.s. di Bukit Sinai (Tursina)."
+            },
+            {
+                q: "Kalimah tasbih adalah Subhanallah yang berarti Maha Suci Allah. Waktu yang paling dilarang untuk mengucapkan kalimah tayibah ini adalah...",
+                options: ["Saat sedang berada di toilet", "Saat melihat keindahan alam semesta", "Saat selesai melaksanakan salat fardu", "Saat berzikir di dalam masjid"],
+                answer: "Saat sedang berada di toilet",
+                explanation: "Mengingat atau melafalkan asma Allah (termasuk tasbih) dilarang dilakukan di tempat kotor seperti toilet."
+            },
+            {
+                q: "Makna dari kalimah takbir (Allahu Akbar) adalah pengakuan bahwa hanya Allah yang Maha Besar. Sikap yang mencerminkan takbir adalah...",
+                options: ["Tidak sombong kepada sesama manusia", "Merasa diri paling kuat selalu", "Mengejek teman yang lebih lemah", "Memamerkan kekayaan kepada orang lain"],
+                answer: "Tidak sombong kepada sesama manusia",
+                explanation: "Memahami Allah Maha Besar berarti menyadari manusia itu kecil, sehingga tidak pantas untuk bersikap sombong."
+            },
+            {
+                q: "Dalam salat jamaah, jika imam lupa jumlah rakaat atau salah gerakan, makmum laki-laki wajib mengingatkan dengan cara...",
+                options: ["Membaca kalimah Subhanallah dengan keras", "Menepuk tangan sebanyak dua kali", "Berteriak menegur imam dari belakang", "Berjalan ke depan memukul imam"],
+                answer: "Membaca kalimah Subhanallah dengan keras",
+                explanation: "Bagi makmum laki-laki, cara mengingatkan imam yang lupa adalah dengan melafalkan Subhanallah."
+            },
+            {
+                q: "Allah menurunkan empat kitab suci. Al-Qur'an adalah kitab penutup yang diturunkan kepada Nabi Muhammad saw. Isi pokok Al-Qur'an adalah...",
+                options: ["Penyempurna kitab kitab suci sebelumnya", "Hanya berisi sejarah masa lampau", "Hanya aturan perang bagi umat", "Kumpulan puisi Arab zaman dahulu"],
+                answer: "Penyempurna kitab kitab suci sebelumnya",
+                explanation: "Al-Qur'an berfungsi sebagai penyempurna (khatamul kutub) dan membenarkan kitab-kitab Allah yang diturunkan sebelumnya."
+            },
+            {
+                q: "Ketika Ali tersandung batu dan hampir jatuh, ia terkejut namun selamat. Kalimah tayibah yang tepat diucapkan Ali secara spontan adalah...",
+                options: ["Mengucapkan lafaz kalimah tayibah Subhanallah", "Mengucapkan lafaz kalimah tayibah Insyaallah", "Mengucapkan lafaz kalimah tayibah Amin", "Mengucapkan lafaz kalimah tayibah Salam"],
+                answer: "Mengucapkan lafaz kalimah tayibah Subhanallah",
+                explanation: "Subhanallah diucapkan ketika terkejut, melihat hal buruk, atau tersentak agar terhindar dari keburukan."
+            },
+            {
+                q: "Salat berjamaah melatih umat Islam untuk disiplin dan taat. Ketaatan makmum kepada imam dalam salat berjamaah ditunjukkan dengan sikap...",
+                options: ["Mengikuti setiap gerakan imam segera", "Mendahului gerakan imam saat salat", "Terlambat mengikuti gerakan imam salat", "Berbeda niat dengan imam salat"],
+                answer: "Mengikuti setiap gerakan imam segera",
+                explanation: "Ketentuan utama makmum adalah wajib mengikuti gerakan imam dan tidak boleh mendahuluinya."
+            },
+            {
+                q: "Sebagai bentuk demonstrasi kalimah tayibah, saat kita mendaki gunung dan sampai di puncak yang indah, kita disunahkan bertakbir. Tujuannya adalah...",
+                options: ["Mengingat kebesaran Allah sang pencipta", "Minta dipuji oleh teman pendaki", "Mengusir hewan buas di hutan", "Agar suara terdengar ke bawah"],
+                answer: "Mengingat kebesaran Allah sang pencipta",
+                explanation: "Mengucapkan Allahu Akbar (takbir) saat di tempat tinggi bertujuan mengagungkan kebesaran Allah yang menciptakan alam."
+            }
+        ];
+
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userName = "";
+        let userClass = "";
+        let jawabanSiswa = []; // Array pelacak jawaban
+
+        // LOCAL STORAGE KEY YANG UNIK AGAR TIDAK BENTROK
+        const STORAGE_KEY = "PAI-STS-K3-S2-HOTS-History";
+
+        // Fungsi Acak Array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function loadHistory() {
+            const historyTable = document.getElementById('history-table');
+            historyTable.innerHTML = "";
+            let history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            
+            if (history.length === 0) {
+                historyTable.innerHTML = "<tr><td colspan='4'>Belum ada riwayat. Jadilah yang pertama!</td></tr>";
+                return;
+            }
+
+            // Urutkan skor tertinggi
+            history.sort((a, b) => b.score - a.score);
+            
+            history.forEach(data => {
+                let row = `<tr>
+                    <td>${data.name}</td>
+                    <td>${data.cls}</td>
+                    <td><strong>${data.score}</strong></td>
+                    <td>${data.time}</td>
+                </tr>`;
+                historyTable.innerHTML += row;
+            });
+        }
+
+        function goToHome() {
+            window.location.href = "../index.html";
+        }
+
+        function startQuiz() {
+            userName = document.getElementById('input-nama').value.trim();
+            userClass = document.getElementById('input-kelas').value.trim();
+
+            if (!userName || !userClass) {
+                alert("Silakan isi Nama dan Kelas terlebih dahulu!");
+                return;
+            }
+
+            // Deep Copy dan Persiapan Soal
+            currentQuestions = JSON.parse(JSON.stringify(bankSoal));
+            shuffleArray(currentQuestions); 
+            
+            // Acak opsi jawaban SEKALI SAJA di awal agar tidak berubah saat tombol "Kembali" ditekan
+            currentQuestions.forEach(q => shuffleArray(q.options));
+
+            // RESET VARIABEL MENYELURUH & DINAMIS
+            currentQuestionIndex = 0;
+            score = 0;
+            jawabanSiswa = new Array(currentQuestions.length).fill(null);
+
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+
+            updateSkorDisplay();
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            let qData = currentQuestions[currentQuestionIndex];
+            let statusJawaban = jawabanSiswa[currentQuestionIndex];
+            
+            document.getElementById('q-counter').innerText = `Soal ${currentQuestionIndex + 1} / ${currentQuestions.length}`;
+            document.getElementById('q-text').innerText = qData.q;
+            
+            // Render Gambar jika ada
+            const imgContainer = document.getElementById('q-image-container');
+            if (qData.image) {
+                document.getElementById('q-image').src = qData.image;
+                document.getElementById('q-image-caption').innerText = qData.imageAlt;
+                imgContainer.style.display = 'block';
+            } else {
+                imgContainer.style.display = 'none';
+            }
+
+            const optionsDiv = document.getElementById('q-options');
+            optionsDiv.innerHTML = "";
+            
+            // Render Opsi Jawaban
+            qData.options.forEach(opt => {
+                let btn = document.createElement("button");
+                btn.className = "option-btn";
+                btn.innerText = opt;
+                
+                // SISTEM FLAGGING & READ-ONLY MODE
+                if (statusJawaban !== null) {
+                    btn.disabled = true; // Kunci tombol
+                    if (opt === qData.answer) {
+                        btn.classList.add('correct');
+                    } else if (opt === statusJawaban.terpilih && opt !== qData.answer) {
+                        btn.classList.add('wrong');
+                    }
+                } else {
+                    btn.onclick = () => selectOption(opt, qData);
+                }
+                optionsDiv.appendChild(btn);
+            });
+
+            const explanationBox = document.getElementById('q-explanation');
+            const btnNext = document.getElementById('btn-next');
+
+            if (statusJawaban !== null) {
+                // Jika sudah dijawab, tampilkan pembahasan dan tombol next
+                document.getElementById('explain-text').innerText = qData.explanation;
+                explanationBox.style.display = 'block';
+                
+                btnNext.style.display = 'inline-block';
+                btnNext.innerText = (currentQuestionIndex === currentQuestions.length - 1) ? "Selesai ➡" : "Selanjutnya ➡";
+            } else {
+                // Jika soal baru, sembunyikan pembahasan dan tombol next
+                explanationBox.style.display = 'none';
+                btnNext.style.display = 'none'; 
+            }
+
+            // Atur tombol prev
+            document.getElementById('btn-prev').disabled = (currentQuestionIndex === 0);
+        }
+
+        function selectOption(selected, qData) {
+            // FLAGGING KEAMANAN: Cek apakah soal ini sudah direkam di memori
+            if (jawabanSiswa[currentQuestionIndex] !== null) return;
+
+            let isCorrect = (selected === qData.answer);
+
+            // Simpan ke memori Array
+            jawabanSiswa[currentQuestionIndex] = {
+                terpilih: selected,
+                isCorrect: isCorrect
+            };
+
+            // Hitung skor terbaru
+            updateSkorDisplay();
+            
+            // Render ulang untuk memicu animasi status benar/salah dan memunculkan tombol next
+            renderQuestion(); 
+        }
+
+        function updateSkorDisplay() {
+            // PERHITUNGAN PERSENTASE DAN LIMITER
+            let jumlahBenar = jawabanSiswa.filter(j => j !== null && j.isCorrect).length;
+            let persenSkor = (jumlahBenar / currentQuestions.length) * 100;
+            
+            // Mengunci maksimal skor 100
+            score = Math.min(Math.round(persenSkor), 100);
+            
+            document.getElementById('score-live').innerText = `Skor Sementara: ${score}`;
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < currentQuestions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+            document.getElementById('final-score').innerText = score;
+
+            let message = "";
+            if(score >= 85) message = "Luar Biasa! Pemahaman agamamu sangat bagus.";
+            else if(score >= 70) message = "Bagus! Terus tingkatkan belajarmu.";
+            else message = "Jangan menyerah, ayo belajar lebih giat lagi!";
+            
+            document.getElementById('result-message').innerText = message;
+
+            saveHistory();
+        }
+
+        function saveHistory() {
+            let history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            
+            // Format Waktu
+            let now = new Date();
+            let timeString = now.toLocaleDateString('id-ID') + " " + now.getHours() + ":" + String(now.getMinutes()).padStart(2, '0');
+
+            history.push({
+                name: userName,
+                cls: userClass,
+                score: score,
+                time: timeString
+            });
+
+            // Simpan 50 riwayat terakhir
+            if (history.length > 50) history.shift();
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+        }
+
+        // Muat riwayat saat halaman pertama dibuka
+        window.onload = loadHistory;
+
+    </script>
+</body>
+</html>

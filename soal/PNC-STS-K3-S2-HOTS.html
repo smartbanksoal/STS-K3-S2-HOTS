@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Pancasila - Berbeda Itu Indah</title>
+    <style>
+        /* Anti Copy-Paste & Select */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            user-select: none; /* Mencegah seleksi teks */
+            -webkit-user-select: none;
+        }
+
+        /* Header & Footer */
+        .header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .footer {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            font-size: 0.9em;
+        }
+        .footer a {
+            color: #4db8ff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* Container Utama */
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border: 3px solid #ff9800;
+        }
+
+        /* Tampilan Log In */
+        .login-group {
+            margin-bottom: 20px;
+        }
+        .login-group input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        .btn {
+            background-color: #2196F3;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background 0.3s;
+            margin: 5px 0; /* Disesuaikan agar rapi */
+        }
+        .btn:hover { background-color: #0b7dda; }
+        .btn-home { background-color: #ff5722; width: 100%; margin: 10px 0 20px 0; } /* Menambahkan jarak atas */
+        .btn-home:hover { background-color: #e64a19; }
+
+        /* Riwayat Skor */
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .history-table th, .history-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        .history-table th { background-color: #f2f2f2; }
+
+        /* Kuis Tampilan */
+        .score-board {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #e91e63;
+            text-align: right;
+            margin-bottom: 15px;
+        }
+        .question-text {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .question-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .option-btn {
+            background-color: #f8f9fa;
+            border: 2px solid #dee2e6;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            text-align: left;
+            transition: all 0.2s;
+            margin: 0; /* Reset margin untuk opsi agar rapi di grid */
+        }
+        .option-btn:hover { background-color: #e2e6ea; }
+        .option-btn.correct { background-color: #d4edda; border-color: #28a745; color: #155724; pointer-events: none; }
+        .option-btn.wrong { background-color: #f8d7da; border-color: #dc3545; color: #721c24; pointer-events: none; }
+        .option-btn.disabled { pointer-events: none; opacity: 0.8; }
+
+        /* Pembahasan */
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e3f2fd;
+            border-left: 5px solid #2196F3;
+            border-radius: 5px;
+            display: none;
+        }
+
+        /* Navigasi Kuis */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .nav-buttons .btn {
+            margin: 0; /* Reset margin untuk tombol navigasi */
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="header" id="main-header">
+        Kode Soal: PNC-STS-K3-S2-HOTS
+    </div>
+
+    <div class="container" id="app-container">
+        
+        <div id="login-screen">
+            <h2 style="text-align: center; color: #333;">Selamat Datang di Kuis Pancasila!</h2>
+            <div class="login-group">
+                <label for="nama">Nama Lengkap:</label>
+                <input type="text" id="nama" placeholder="Masukkan nama lengkapmu..." required>
+            </div>
+            <div class="login-group">
+                <label for="kelas">Kelas:</label>
+                <input type="text" id="kelas" placeholder="Masukkan kelasmu..." required>
+            </div>
+            
+            <button class="btn" style="width: 100%; background-color: #4CAF50;" onclick="startQuiz()">Mulai Kuis</button>
+            <button class="btn btn-home" onclick="window.location.href='../index.html'">Kembali ke Home</button>
+
+            <h3 style="margin-top: 30px; text-align: center;">Riwayat Skor</h3>
+            <table class="history-table" id="history-table">
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Kelas</th>
+                        <th>Waktu</th>
+                        <th>Skor</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body">
+                </tbody>
+            </table>
+        </div>
+
+        <div id="quiz-screen" class="hidden">
+            <div class="score-board" id="score-board">Skor Sementara: 0</div>
+            <div id="question-container">
+                <img id="q-img" class="question-image hidden" src="" alt="">
+                <div class="question-text" id="q-text">Pertanyaan akan muncul di sini.</div>
+                <div class="options" id="options"></div>
+            </div>
+            
+            <div class="explanation" id="explanation"></div>
+
+            <div class="nav-buttons">
+                <button class="btn" id="btn-prev" onclick="prevQuestion()" style="background-color: #607d8b;">Soal Sebelumnya</button>
+                <button class="btn" id="btn-next" onclick="nextQuestion()">Soal Selanjutnya</button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="hidden" style="text-align: center;">
+            <h2>Kuis Selesai!</h2>
+            <h1 id="final-score" style="color: #4CAF50; font-size: 3em; margin: 20px 0;">100</h1>
+            <p id="result-message" style="font-size: 1.2em; margin-bottom: 30px;"></p>
+            <button class="btn" onclick="location.reload()">Kerjakan Ulang (Acak Baru)</button>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        &copy;<span id="year"></span> Oleh: Dwi Endrasto | Produk ini asli jika didapatkan melalui <a href="https://lynk.id/smartbanksoal" target="_blank">https://lynk.id/smartbanksoal</a>
+    </div>
+
+    <script>
+        // Keamanan: Proteksi Klik Kanan & Copy Paste
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('copy', event => {
+            event.clipboardData.setData('text/plain', 'Mohon maaf, copy-paste dinonaktifkan.');
+            event.preventDefault();
+        });
+
+        // Set Tahun Otomatis
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Kunci Penyimpanan Lokal Khusus untuk menghindari bentrokan
+        const STORAGE_KEY = 'history_PNC-STS-K3-S2-HOTS';
+
+        // Data Soal
+        // Aturan: HOTS, Pilihan jawaban panjangnya seimbang, 5 bergambar.
+        const quizData = [
+            // --- 5 SOAL BERGAMBAR ---
+            {
+                img: "gambar/baju_adat_berbeda.jpg", // JALUR GAMBAR 1
+                imgAlt: "Gambar tiga anak memakai baju adat dari Jawa, Papua, dan Bali sedang bermain bersama",
+                q: "Perhatikan gambar di atas! Budi, Edo, dan Made memakai pakaian adat yang berbeda dari daerah asal mereka. Sikap terbaik yang menunjukkan penghargaan terhadap identitas teman adalah...",
+                opts: ["Bermain dengan riang gembira bersama", "Menyuruh teman mengganti pakaiannya", "Hanya mengobrol dengan teman sedarah", "Menjauhi teman yang pakaiannya aneh"],
+                ans: "Bermain dengan riang gembira bersama",
+                exp: "Menghargai perbedaan identitas budaya dapat dilakukan dengan tetap bermain rukun bersama tanpa membeda-bedakan pakaian adat mereka."
+            },
+            {
+                img: "gambar/tempat_ibadah.jpg", // JALUR GAMBAR 2
+                imgAlt: "Gambar tetangga berbeda agama sedang membagikan makanan saat hari raya",
+                q: "Berdasarkan gambar, tetangga yang berbeda agama sedang membagikan makanan khas hari raya. Jika kamu menjadi anak yang menerima makanan tersebut, tindakan yang tepat adalah...",
+                opts: ["Menerima dengan senang dan berterimakasih", "Menolak karena berbeda keyakinan denganmu", "Membuang makanan itu saat tetangga pergi", "Menerima namun diam saja tanpa menyapa"],
+                ans: "Menerima dengan senang dan berterimakasih",
+                exp: "Menerima pemberian dan berterima kasih adalah bentuk toleransi dan menghargai perayaan agama tetangga di lingkungan masyarakat."
+            },
+            {
+                img: "gambar/kerja_bakti_suku.jpg", // JALUR GAMBAR 3
+                imgAlt: "Gambar warga dari berbagai suku sedang membersihkan selokan desa bersama-sama",
+                q: "Warga desa pada gambar berasal dari suku yang berbeda-beda, namun mereka membersihkan desa bersama. Manfaat utama dari kegiatan gotong royong dalam keragaman tersebut adalah...",
+                opts: ["Pekerjaan cepat selesai dan hidup rukun", "Mendapat pujian dari kepala desa setempat", "Menunjukkan suku siapa yang paling hebat", "Menghabiskan waktu libur dengan bekerja"],
+                ans: "Pekerjaan cepat selesai dan hidup rukun",
+                exp: "Kerja sama antar suku membuat pekerjaan menjadi ringan dan menumbuhkan kerukunan serta persatuan di masyarakat."
+            },
+            {
+                img: "gambar/makanan_tradisional.jpg", // JALUR GAMBAR 4
+                imgAlt: "Gambar berbagai makanan tradisional di atas meja makan saat acara kelas",
+                q: "Saat festival budaya kelas, setiap siswa membawa makanan tradisional (seperti gambar). Siti tidak suka makanan pedas dari Padang yang dibawa temannya. Sikap Siti sebaiknya...",
+                opts: ["Menghargai dan mencoba makanan yang lain", "Meminta temannya membuang makanan itu", "Mengejek makanan tersebut di depan kelas", "Menangis karena tidak ada makanan enak"],
+                ans: "Menghargai dan mencoba makanan yang lain",
+                exp: "Kita tidak harus menyukai semua makanan daerah, namun kita wajib menghargainya dan bisa memilih mencicipi makanan daerah lainnya."
+            },
+            {
+                img: "gambar/belajar_bahasa.jpg", // JALUR GAMBAR 5
+                imgAlt: "Gambar dua anak sedang bertukar buku kamus bahasa daerah",
+                q: "Dua anak pada gambar sedang saling mengajarkan bahasa daerahnya. Mengapa mempelajari sedikit bahasa daerah teman itu merupakan tindakan yang sangat baik?",
+                opts: ["Karena bisa mempererat tali persahabatan", "Karena diwajibkan oleh guru di sekolahan", "Karena agar terlihat lebih pintar di kelas", "Karena ingin memamerkan bahasa sendiri"],
+                ans: "Karena bisa mempererat tali persahabatan",
+                exp: "Mengenal bahasa daerah teman menunjukkan rasa hormat dan ketertarikan pada budaya mereka, yang akan mempererat persahabatan."
+            },
+            // --- 5 SOAL TEKS (Sisanya dari total 10 sebagai sampel) ---
+            {
+                img: "", imgAlt: "",
+                q: "Andi memiliki teman baru pindahan dari luar pulau. Teman tersebut berbicara dengan logat yang sangat berbeda. Untuk menunjukkan penerapan Bhinneka Tunggal Ika di kelas, Andi harus...",
+                opts: ["Menyapa dan mengajaknya berbicara ramah", "Menertawakan logatnya saat dia berbicara", "Menyuruhnya diam karena sulit dimengerti", "Mengabaikannya sampai dia bisa beradaptasi"],
+                ans: "Menyapa dan mengajaknya berbicara ramah",
+                exp: "Berbicara dengan ramah menggunakan bahasa persatuan (Bahasa Indonesia) tanpa mengejek logat daerah adalah bentuk penghargaan."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Di keluarga Siti, Ayah berasal dari suku Jawa dan Ibu dari suku Minang. Saat liburan, mereka berdebat kecil menentukan menu masakan keluarga. Cara terbaik menyelesaikan hal ini adalah...",
+                opts: ["Membuat jadwal masakan Jawa dan Minang", "Hanya memasak masakan dari pihak Ayah", "Hanya memasak masakan dari pihak Ibu", "Membeli makanan di luar agar tidak repot"],
+                ans: "Membuat jadwal masakan Jawa dan Minang",
+                exp: "Mengakomodasi budaya kedua orang tua (misal dengan jadwal bergantian) adalah wujud menghargai keragaman identitas dalam keluarga."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Saat bermain bola, tim Beni terdiri dari anak-anak yang berbeda agama. Ketika azan berkumandang, teman yang beragama Islam meminta izin istirahat untuk salat. Sikap Beni yang tepat adalah...",
+                opts: ["Memberi izin istirahat dan menunda main", "Menyuruh teman tersebut salat nanti saja", "Melanjutkan permainan tanpa teman itu", "Marah karena permainannya jadi terhenti"],
+                ans: "Memberi izin istirahat dan menunda main",
+                exp: "Memberikan waktu bagi teman untuk menjalankan ibadahnya adalah pengamalan Pancasila dan bentuk toleransi agama yang tinggi."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Indonesia memiliki semboyan 'Bhinneka Tunggal Ika'. Di lingkungan masyarakat, makna semboyan ini paling tepat diaplikasikan dengan cara...",
+                opts: ["Saling membantu tetangga walau berbeda", "Hanya bergaul dengan orang yang seagama", "Memaksa orang lain mengikuti tradisi kita", "Menutup diri dari kegiatan gotong royong"],
+                ans: "Saling membantu tetangga walau berbeda",
+                exp: "Bhinneka Tunggal Ika berarti berbeda-beda tetapi tetap satu. Membantu tetangga tanpa memandang latar belakang adalah contoh nyatanya."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Di sekolah, Dodi diajarkan untuk bangga menggunakan Bahasa Indonesia. Alasan utama mengapa Bahasa Indonesia disebut sebagai bahasa persatuan adalah...",
+                opts: ["Mampu menghubungkan orang berbeda suku", "Menjadi bahasa yang paling mudah dihafal", "Menggantikan semua bahasa daerah asli", "Merupakan bahasa yang dipakai di dunia"],
+                ans: "Mampu menghubungkan orang berbeda suku",
+                exp: "Bahasa Indonesia memfasilitasi komunikasi antar suku yang memiliki bahasa daerah masing-masing, sehingga menyatukan bangsa."
+            },
+            // --- 30 SOAL TEKS TAMBAHAN (HOTS) ---
+            {
+                img: "", imgAlt: "",
+                q: "Di kelas tiga, ada siswa pindahan dari Papua bernama Edo. Edo memiliki warna kulit dan rambut yang berbeda dengan teman sekelasnya. Sikap yang mencerminkan penghargaan terhadap identitas Edo adalah...",
+                opts: ["Mengajaknya bermain bersama saat jam istirahat", "Menjauhinya karena memiliki penampilan berbeda", "Menyuruhnya bermain dengan teman dari daerahnya", "Memintanya duduk sendirian di bangku paling belakang"],
+                ans: "Mengajaknya bermain bersama saat jam istirahat",
+                exp: "Menghargai ciri fisik teman yang berbeda suku merupakan pengamalan sila kerakyatan dan wujud nyata persatuan di lingkungan sekolah."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Setiap hari Minggu, keluarga Budi yang beragama Kristen pergi ke gereja, sedangkan keluarga Ali tetangganya bersantai di rumah. Saat Budi lewat, tindakan Ali yang paling tepat adalah...",
+                opts: ["Menyapa Budi dengan ramah dan mengucapkan salam", "Pura-pura tidak melihat Budi yang sedang berjalan", "Menyuruh Budi untuk tidak pergi beribadah hari ini", "Menutup pintu rumah rapat-rapat saat Budi lewat"],
+                ans: "Menyapa Budi dengan ramah dan mengucapkan salam",
+                exp: "Menyapa dengan ramah adalah wujud toleransi beragama dan kerukunan bertetangga tanpa mengganggu ibadah masing-masing."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Siti suka menari Jaipong dari Jawa Barat, sedangkan Lani suka menari Pendet dari Bali. Saat acara perpisahan sekolah, guru meminta mereka tampil. Keputusan terbaik yang bisa mereka ambil adalah...",
+                opts: ["Menampilkan kedua tarian tersebut secara bergantian", "Membatalkan penampilan karena berbeda jenis tarian", "Hanya menampilkan tari Jaipong yang lebih mudah", "Hanya menampilkan tari Pendet agar lebih menarik"],
+                ans: "Menampilkan kedua tarian tersebut secara bergantian",
+                exp: "Menggabungkan atau menampilkan berbagai kesenian daerah secara bergantian memperkaya acara dan menunjukkan kebanggaan pada budaya bangsa."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Di rumah, kakek sering menggunakan bahasa daerah yang belum dipahami oleh Anton. Agar Anton tetap bisa berkomunikasi dan menghargai kakek, yang harus dilakukan Anton adalah...",
+                opts: ["Meminta kakek mengajarinya sedikit bahasa daerah", "Mengabaikan kakek karena tidak mengerti bahasanya", "Marah dan meminta kakek selalu berbahasa Indonesia", "Meninggalkan kakek sendirian di ruang tamu rumah"],
+                ans: "Meminta kakek mengajarinya sedikit bahasa daerah",
+                exp: "Belajar bahasa daerah dari anggota keluarga adalah cara melestarikan budaya sekaligus menunjukkan rasa hormat kepada orang tua."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Pada saat kerja bakti menghias kelas untuk hari kemerdekaan, teman-teman memiliki ide hiasan dari daerah masing-masing. Cara terbaik memutuskan hiasan kelas tersebut adalah...",
+                opts: ["Melakukan musyawarah untuk menggabungkan semua ide", "Menggunakan ide ketua kelas saja agar lebih cepat selesai", "Menolak hiasan dari daerah yang tidak terkenal namanya", "Membagi kelas menjadi beberapa kelompok yang bermusuhan"],
+                ans: "Melakukan musyawarah untuk menggabungkan semua ide",
+                exp: "Musyawarah merupakan cara terbaik menghargai pendapat yang berbeda sehingga semua budaya teman dapat terwakili dengan adil."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Hari ini Made merayakan Hari Raya Nyepi sehingga tidak keluar rumah. Sore harinya, teman-teman Made ingin bermain bola di lapangan dekat rumah Made. Sebaiknya mereka...",
+                opts: ["Pindah bermain ke lapangan lain yang agak lebih jauh", "Tetap bermain di sana sambil berteriak dengan keras", "Memaksa Made keluar rumah untuk ikut bermain bola", "Melempari rumah Made dengan bola agar dia terbangun"],
+                ans: "Pindah bermain ke lapangan lain yang agak lebih jauh",
+                exp: "Pindah lokasi bermain merupakan bentuk penghormatan agar tidak mengganggu ketenangan umat yang sedang merayakan Hari Raya Nyepi."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Nina membawa bekal kue khas daerahnya ke sekolah. Ia menawarkan kue itu kepada teman-temannya. Namun, rasa kue itu agak aneh bagi lidah Doni. Doni sebaiknya...",
+                opts: ["Mencicipinya sedikit dan mengucapkan terima kasih", "Menolak dengan kasar dan membuang kue tersebut", "Mengejek bentuk dan rasa kue di depan teman-teman", "Menyuruh Nina memakan semua kuenya sendirian saja"],
+                ans: "Mencicipinya sedikit dan mengucapkan terima kasih",
+                exp: "Menghargai makanan khas teman tidak harus dengan menyukainya, cukup mencicipi dan berterima kasih agar tidak menyinggung perasaannya."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Dalam sebuah permainan kelompok, setiap anggota berasal dari suku yang berbeda. Agar kelompok tersebut bisa menang dalam permainan, syarat utamanya adalah...",
+                opts: ["Membangun kerja sama yang baik antar semua anggota", "Memilih pemimpin kelompok yang berasal dari ibu kota", "Menyuruh anggota yang berbeda suku untuk diam saja", "Hanya mendengarkan perintah dari siswa yang pandai"],
+                ans: "Membangun kerja sama yang baik antar semua anggota",
+                exp: "Kerja sama dan persatuan mengatasi segala perbedaan suku. Tanpa persatuan, tujuan bersama dalam kelompok tidak akan tercapai."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Pak RT mengajak seluruh warga dari berbagai latar belakang suku untuk menjaga pos ronda bergantian. Manfaat dari kegiatan menjaga pos ronda bersama ini adalah...",
+                opts: ["Mempererat persaudaraan dan keamanan lingkungan", "Membuat warga menjadi saling membandingkan harta", "Mengetahui suku mana yang paling kuat begadang", "Mengurangi waktu tidur warga saat malam hari tiba"],
+                ans: "Mempererat persaudaraan dan keamanan lingkungan",
+                exp: "Ronda malam bersama menjaga keamanan sekaligus menjadi ajang interaksi yang baik untuk saling mengenal antarwarga yang berbeda."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Saat liburan ke Candi Borobudur, Rina mendengar turis asing bertanya dalam bahasa Inggris. Rina tidak paham, namun ada seorang anak dari suku lain yang membantunya menjawab. Rina merasa...",
+                opts: ["Bangga karena ada anak Indonesia yang pintar membantu", "Iri dan marah karena anak tersebut menonjolkan diri", "Biasa saja karena bukan urusannya mengurus turis", "Malu dan pergi meninggalkan tempat itu dengan cepat"],
+                ans: "Bangga karena ada anak Indonesia yang pintar membantu",
+                exp: "Kita harus bangga melihat sesama anak bangsa, apapun sukunya, mampu berbuat baik dan membawa nama baik Indonesia di mata dunia."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Ibu guru meminta setiap anak maju menceritakan pengalaman liburannya menggunakan Bahasa Indonesia. Tujuan menggunakan Bahasa Indonesia dalam tugas ini adalah agar...",
+                opts: ["Semua teman sekelas dapat memahami cerita tersebut", "Siswa melupakan bahasa daerah asal orang tuanya", "Cerita terdengar lebih mewah dan sangat membanggakan", "Nilai pelajaran Bahasa Indonesia siswa menjadi tinggi"],
+                ans: "Semua teman sekelas dapat memahami cerita tersebut",
+                exp: "Fungsi bahasa Indonesia di sekolah adalah sebagai bahasa pengantar dan pemersatu, agar anak dari berbagai latar belakang bisa saling mengerti."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Ayah memiliki kulit sawo matang seperti orang Jawa pada umumnya, sedangkan Paman memiliki kulit lebih terang karena keturunan Manado. Saat keluarga berkumpul, mereka saling bercanda rukun. Hal ini menunjukkan...",
+                opts: ["Perbedaan fisik bukan penghalang kerukunan keluarga", "Orang kulit terang selalu menjadi favorit di keluarga", "Hanya orang dengan kulit sama yang bisa bergaul", "Keluarga harus memisahkan tempat duduk saat makan"],
+                ans: "Perbedaan fisik bukan penghalang kerukunan keluarga",
+                exp: "Dalam satu keluarga pun bisa terdapat perbedaan ciri fisik, dan kasih sayang akan menghilangkan batasan perbedaan tersebut."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Di perpustakaan sekolah, Rio menemukan buku kumpulan dongeng dari seluruh Nusantara. Membaca buku tersebut akan membuat Rio memperoleh manfaat berupa...",
+                opts: ["Pengetahuan tentang luasnya kekayaan budaya bangsa", "Mata yang lelah karena membaca buku terlalu tebal", "Tugas sekolah yang menjadi bertambah semakin banyak", "Waktu bermain yang terbuang sia-sia di perpustakaan"],
+                ans: "Pengetahuan tentang luasnya kekayaan budaya bangsa",
+                exp: "Membaca dongeng Nusantara membuka wawasan tentang tradisi, kebijaksanaan lokal, dan keragaman budaya yang dimiliki Indonesia."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Tetangga baru Mutiara menggunakan pakaian yang sangat tertutup karena alasan agamanya. Mutiara memiliki cara berpakaian yang berbeda. Agar tercipta suasana nyaman, Mutiara sebaiknya...",
+                opts: ["Menghormati pilihan pakaian tetangganya tanpa mengkritik", "Menyuruh tetangganya memakai pakaian yang lebih santai", "Meminta ibu menjauhi tetangga baru tersebut setiap hari", "Menatap tetangganya dengan pandangan yang penuh sinis"],
+                ans: "Menghormati pilihan pakaian tetangganya tanpa mengkritik",
+                exp: "Kebebasan menjalankan ajaran agama, termasuk cara berpakaian yang sesuai ajaran, harus saling dihormati antar warga."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Kelasmu kedatangan tamu seorang seniman dari daerah lain. Beliau memainkan alat musik tradisional yang suaranya unik. Walaupun belum pernah mendengar sebelumnya, kamu akan...",
+                opts: ["Mendengarkan dengan tenang dan penuh perhatian penuh", "Menutup telinga karena suaranya dianggap tidak enak", "Mengobrol dengan teman sebelah saat seniman tampil", "Meminta seniman itu berhenti memainkan alat musiknya"],
+                ans: "Mendengarkan dengan tenang dan penuh perhatian penuh",
+                exp: "Apresiasi seni ditunjukkan dengan menyimak penampilan secara sopan, yang menandakan kita menghargai hasil budaya daerah lain."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Rendi sering mengejek nama marga (nama keluarga) temannya dari Batak karena terdengar asing. Tindakan Rendi tersebut dapat menyebabkan...",
+                opts: ["Terjadinya pertengkaran dan rusaknya tali pertemanan", "Temannya menjadi bangga dan sangat senang di kelas", "Rendi diangkat menjadi ketua kelas oleh teman-teman", "Suasana kelas menjadi ceria karena sering bercanda"],
+                ans: "Terjadinya pertengkaran dan rusaknya tali pertemanan",
+                exp: "Mengejek nama marga yang merupakan identitas budaya seseorang adalah tindakan tidak sopan yang memicu konflik antar teman."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Semboyan 'Bhinneka Tunggal Ika' berasal dari kitab Sutasoma. Pesan utama yang ingin disampaikan semboyan tersebut kepada pelajar kelas tiga adalah...",
+                opts: ["Berteman dengan siapa saja meski berbeda suku agama", "Hanya berteman dengan anak yang pintar dan kaya saja", "Menghafalkan semua nama suku yang ada di Indonesia", "Memakai pakaian adat ke sekolah pada setiap harinya"],
+                ans: "Berteman dengan siapa saja meski berbeda suku agama",
+                exp: "Bhinneka Tunggal Ika mengajarkan anak sejak dini untuk hidup berdampingan dan tidak membeda-bedakan teman bergaul di sekolah."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Ketika terjadi bencana alam di daerah lain yang mayoritas penduduknya berbeda agama, sekolah menggalang dana bantuan. Sikap kita terhadap penggalangan dana tersebut sebaiknya...",
+                opts: ["Ikut menyumbang sesuai kemampuan dengan ikhlas hati", "Menolak menyumbang karena berbeda keyakinan agama", "Menyumbang hanya jika dipaksa oleh guru di kelas", "Melarang teman lain untuk ikut memberikan sumbangan"],
+                ans: "Ikut menyumbang sesuai kemampuan dengan ikhlas hati",
+                exp: "Kemanusiaan tidak mengenal batas agama atau suku. Membantu sesama adalah kewajiban moral kita sebagai makhluk Tuhan."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Toni melihat seorang teman kesulitan mencari ruang kelas karena belum lancar berbahasa Indonesia dan hanya paham bahasa daerahnya. Toni sebaiknya...",
+                opts: ["Membantunya mengantar ke kelas dengan isyarat sopan", "Menertawakannya karena tidak bisa bahasa Indonesia", "Meninggalkannya karena Toni tidak paham bahasa itu", "Memarahinya agar segera belajar bahasa Indonesia"],
+                ans: "Membantunya mengantar ke kelas dengan isyarat sopan",
+                exp: "Bahasa tubuh yang ramah atau isyarat sopan bisa menjembatani perbedaan bahasa saat membantu teman yang sedang dalam kesulitan."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Pada peta Indonesia, terdapat ribuan pulau. Setiap pulau biasanya memiliki adat istiadat yang berbeda. Hal ini membuktikan bahwa negara kita adalah negara yang...",
+                opts: ["Sangat kaya akan keragaman budaya dan tradisi lokal", "Sulit bersatu karena pulaunya terpisah oleh lautan", "Hanya memiliki satu jenis budaya yang mendominasi", "Budayanya selalu sama dari ujung barat hingga timur"],
+                ans: "Sangat kaya akan keragaman budaya dan tradisi lokal",
+                exp: "Kondisi geografis kepulauan Indonesia menjadi salah satu faktor utama yang melahirkan kekayaan dan keberagaman adat istiadat."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Dalam keluarga, Ayah memiliki hobi memelihara burung perkutut (khas Jawa), sedangkan Paman suka mengoleksi kain tenun (khas NTT). Menyikapi perbedaan hobi bernuansa budaya ini, kita sebaiknya...",
+                opts: ["Ikut merawat dan menjaga kedua benda budaya tersebut", "Hanya menyukai burung karena suaranya lebih merdu", "Hanya menyukai kain karena warnanya lebih menarik", "Meminta ayah dan paman membuang koleksi mereka"],
+                ans: "Ikut merawat dan menjaga kedua benda budaya tersebut",
+                exp: "Menjaga warisan budaya, baik berupa kesenian maupun benda khas daerah, adalah bentuk apresiasi terhadap keberagaman identitas keluarga."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Ibu guru membagi kelompok piket tanpa melihat agama muridnya. Jika kamu sekelompok dengan teman yang berbeda agama, yang akan terjadi bila kalian kompak adalah...",
+                opts: ["Tugas piket kelas akan selesai dengan cepat dan bersih", "Terjadi perdebatan tentang agama saat menyapu kelas", "Kalian akan mendapat hukuman dari guru karena ribut", "Ruang kelas akan tetap kotor karena tidak mau bekerja"],
+                ans: "Tugas piket kelas akan selesai dengan cepat dan bersih",
+                exp: "Kekompakan yang mengesampingkan perbedaan latar belakang agama akan membuahkan hasil kerja sama yang efisien dan kerukunan."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Sikap diskriminasi (membeda-bedakan) dalam berteman sangat dilarang dalam ajaran Pancasila, khususnya pada sila yang berbunyi...",
+                opts: ["Kemanusiaan yang adil dan beradab", "Ketuhanan Yang Maha Esa", "Kerakyatan yang dipimpin oleh hikmat", "Keadilan sosial bagi seluruh rakyat"],
+                ans: "Kemanusiaan yang adil dan beradab",
+                exp: "Sila kedua mengajarkan kita untuk memperlakukan manusia lain secara setara, adil, beradab, tanpa membedakan suku bangsa."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Saat rapat kampung, warga memberikan usul penyelesaian masalah sampah. Ada usul dari warga suku A dan suku B. Pemimpin musyawarah sebaiknya...",
+                opts: ["Mempertimbangkan kedua usul untuk mencari yang terbaik", "Hanya menerima usulan dari warga suku aslinya saja", "Menolak semua usul dan memutuskan masalah sendirian", "Menyuruh warga dari suku berbeda untuk pulang saja"],
+                ans: "Mempertimbangkan kedua usul untuk mencari yang terbaik",
+                exp: "Sikap demokratis dalam musyawarah adalah mendengarkan aspirasi semua warga negara secara objektif tanpa memandang latar belakang kesukuan."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Dina merasa malu jika ketahuan ia menyukai lagu daerah di saat teman-temannya menyukai lagu pop modern asing. Nasihat yang baik untuk Dina adalah...",
+                opts: ["Jangan malu karena lagu daerah adalah kekayaan bangsa", "Sebaiknya ikut menyukai lagu asing agar punya teman", "Menyembunyikan hobinya dan tidak usah bernyanyi lagi", "Memaksa teman-temannya mendengarkan lagu daerahnya"],
+                ans: "Jangan malu karena lagu daerah adalah kekayaan bangsa",
+                exp: "Bangga terhadap budaya sendiri (seperti lagu daerah) sangat penting di tengah arus modernisasi untuk menjaga identitas bangsa."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Agus selalu menghina pakaian ibadah teman yang berbeda agama saat mereka bertemu di jalan. Dampak buruk dari perilaku Agus terhadap lingkungan masyarakat adalah...",
+                opts: ["Menimbulkan perpecahan dan hilangnya rasa aman warga", "Membuat masyarakat menjadi semakin bersih dan tertib", "Membuat warga memuji keberanian Agus berbicara keras", "Menjadikan Agus sebagai ketua pemuda di lingkungannya"],
+                ans: "Menimbulkan perpecahan dan hilangnya rasa aman warga",
+                exp: "Sikap intoleran seperti menghina simbol agama lain sangat membahayakan persatuan masyarakat karena dapat memicu permusuhan."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Rumah ibadah di Indonesia bermacam-macam, ada Masjid, Gereja, Pura, Vihara, dan Klenteng. Jika sekolahmu berdekatan dengan tempat ibadah, sikap yang ditunjukkan saat ada ibadah adalah...",
+                opts: ["Menjaga ketenangan sekolah agar ibadah mereka khusyuk", "Menyalakan pengeras suara sekolah dengan volume penuh", "Mengejek orang-orang yang keluar dari tempat ibadah", "Masuk ke tempat ibadah dan mengganggu jalannya acara"],
+                ans: "Menjaga ketenangan sekolah agar ibadah mereka khusyuk",
+                exp: "Tenggang rasa dan toleransi diwujudkan dengan menjaga kondisi kondusif (tenang) ketika saudara sebangsa sedang menjalankan ibadahnya."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Budi merayakan ulang tahunnya dan mengundang seluruh teman kelas. Ia memesan makanan halal agar teman-teman muslimnya dapat ikut makan tanpa ragu. Sikap Budi adalah contoh...",
+                opts: ["Toleransi tinggi dan menghargai keyakinan orang lain", "Mencari perhatian agar hadiah yang didapatnya banyak", "Memaksa teman muslimnya untuk menyukai makanan Budi", "Takut dimarahi oleh teman-teman kelas yang beragama Islam"],
+                ans: "Toleransi tinggi dan menghargai keyakinan orang lain",
+                exp: "Memastikan konsumsi aman untuk pemeluk agama lain dalam suatu acara merupakan tindakan tenggang rasa yang sangat luar biasa."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Indonesia memiliki lambang negara burung Garuda. Pada cengkeraman kaki burung Garuda, terdapat tulisan yang mengajarkan kita untuk...",
+                opts: ["Tetap bersatu di tengah berbagai macam perbedaan suku", "Melupakan budaya lokal dan mencari budaya yang baru", "Mengunggulkan satu suku yang paling berkuasa di negara", "Menghapus semua bahasa daerah demi bahasa nasional"],
+                ans: "Tetap bersatu di tengah berbagai macam perbedaan suku",
+                exp: "Pita bertuliskan Bhinneka Tunggal Ika di kaki Garuda Pancasila mengamanatkan persatuan yang kokoh dalam harmoni keragaman."
+            },
+            {
+                img: "", imgAlt: "",
+                q: "Perbedaan budaya membuat Indonesia dikenal oleh negara luar. Oleh karena itu, kita sebagai warga negara sejak dini wajib...",
+                opts: ["Merawat dan melestarikan budaya agar tidak cepat punah", "Menjual seluruh kebudayaan kepada wisatawan dari luar", "Mengganti budaya lama dengan budaya barat yang keren", "Membatasi masuknya turis yang ingin belajar budaya kita"],
+                ans: "Merawat dan melestarikan budaya agar tidak cepat punah",
+                exp: "Sebagai generasi penerus, melestarikan warisan identitas budaya bangsa merupakan kewajiban agar identitas tersebut tidak hilang ditelan zaman."
+            }
+        ];
+
+        // Variabel Status Kuis
+        let currentUser = {};
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let score = 0;
+
+        // Fungsi Acak Array (Fisher-Yates)
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId);
+                curId -= 1;
+                let tmp = array[curId];
+                array[curId] = array[randId];
+                array[randId] = tmp;
+            }
+            return array;
+        }
+
+        // Tampilkan Riwayat saat halaman dimuat
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            const tbody = document.getElementById('history-body');
+            tbody.innerHTML = '';
+            history.forEach(entry => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${entry.nama}</td><td>${entry.kelas}</td><td>${entry.waktu}</td><td>${entry.skor}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+        window.onload = loadHistory;
+
+        function startQuiz() {
+            const nama = document.getElementById('nama').value.trim();
+            const kelas = document.getElementById('kelas').value.trim();
+            if(!nama || !kelas) {
+                alert("Silakan isi nama dan kelas terlebih dahulu!");
+                return;
+            }
+
+            currentUser = { nama, kelas };
+            
+            // Siapkan Soal
+            currentQuestions = JSON.parse(JSON.stringify(quizData));
+            shuffleArray(currentQuestions);
+            
+            // Acak pilihan jawaban di dalam setiap soal
+            currentQuestions.forEach(q => {
+                let optsWithAns = q.opts.map(opt => ({ text: opt, isCorrect: opt === q.ans }));
+                shuffleArray(optsWithAns);
+                q.shuffledOpts = optsWithAns;
+            });
+
+            // 3. RESET VARIABEL SECARA MENYELURUH
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = new Array(currentQuestions.length).fill(null);
+
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            
+            updateScoreDisplay(); // Reset papan skor ke 0
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = currentQuestions[currentQuestionIndex];
+            
+            // Header Kode Soal
+            document.getElementById('main-header').textContent = `Kode Soal: PNC-STS-K3-S2-HOTS | Soal ${currentQuestionIndex + 1} dari ${currentQuestions.length}`;
+            
+            // Update Teks & Gambar
+            document.getElementById('q-text').textContent = q.q;
+            const imgEl = document.getElementById('q-img');
+            if(q.img && q.img !== "") {
+                imgEl.src = q.img;
+                imgEl.alt = q.imgAlt;
+                imgEl.classList.remove('hidden');
+            } else {
+                imgEl.classList.add('hidden');
+            }
+
+            // Update Pilihan Jawaban
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+            
+            // Cek status flagging dari array memori
+            const statusJawaban = userAnswers[currentQuestionIndex];
+            const isAnswered = statusJawaban !== null;
+
+            q.shuffledOpts.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                // Memberikan label A, B, C, D
+                const labels = ['A', 'B', 'C', 'D'];
+                btn.textContent = `${labels[index]}. ${opt.text}`;
+                
+                // Menerapkan Read-Only Mode jika sudah dijawab
+                if (isAnswered) {
+                    btn.classList.add('disabled');
+                    if (opt.isCorrect) {
+                        btn.classList.add('correct');
+                    } else if (statusJawaban.text === opt.text && !opt.isCorrect) {
+                        btn.classList.add('wrong');
+                    }
+                } else {
+                    btn.onclick = () => selectAnswer(opt, btn);
+                }
+                optionsDiv.appendChild(btn);
+            });
+
+            // Atur Pembahasan & Navigasi
+            const expDiv = document.getElementById('explanation');
+            if(isAnswered) {
+                expDiv.innerHTML = `<strong>Pembahasan:</strong><br>${q.exp}`;
+                expDiv.style.display = 'block';
+            } else {
+                expDiv.style.display = 'none';
+            }
+
+            document.getElementById('btn-prev').disabled = currentQuestionIndex === 0;
+            
+            // Tombol Next berubah jadi Selesai di akhir
+            const btnNext = document.getElementById('btn-next');
+            if (currentQuestionIndex === currentQuestions.length - 1) {
+                btnNext.textContent = "Selesai Kuis";
+                btnNext.style.backgroundColor = "#e91e63";
+            } else {
+                btnNext.textContent = "Soal Selanjutnya";
+                btnNext.style.backgroundColor = "#2196F3";
+            }
+        }
+
+        function selectAnswer(selectedOpt, btnElement) {
+            // 1. SISTEM FLAGGING: Tolak interaksi lanjutan jika memori mendeteksi sudah dijawab (Cegah Spam Klik)
+            if (userAnswers[currentQuestionIndex] !== null) return;
+
+            const q = currentQuestions[currentQuestionIndex];
+            
+            // Simpan jawaban siswa ke dalam bentuk objek
+            userAnswers[currentQuestionIndex] = {
+                text: selectedOpt.text,
+                isCorrect: selectedOpt.isCorrect
+            };
+            
+            // Kunci semua tombol secara visual
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach(btn => btn.classList.add('disabled'));
+
+            if (selectedOpt.isCorrect) {
+                btnElement.classList.add('correct');
+            } else {
+                btnElement.classList.add('wrong');
+                // Cari jawaban benar untuk dihijaukan
+                buttons.forEach((btn, idx) => {
+                    if(q.shuffledOpts[idx].isCorrect) btn.classList.add('correct');
+                });
+            }
+
+            // Panggil fungsi pembaruan skor aman
+            updateScoreDisplay();
+            
+            const expDiv = document.getElementById('explanation');
+            expDiv.innerHTML = `<strong>Pembahasan:</strong><br>${q.exp}`;
+            expDiv.style.display = 'block';
+        }
+
+        // Fungsi baru untuk Kalkulasi Aman
+        function updateScoreDisplay() {
+            // 4. PERHITUNGAN BERBASIS PERSENTASE
+            const jumlahBenar = userAnswers.filter(ans => ans !== null && ans.isCorrect).length;
+            const skorHitung = (jumlahBenar / currentQuestions.length) * 100;
+            
+            // 2. LIMITER: Skor maksimal tidak bisa tembus 100
+            score = Math.min(Math.round(skorHitung), 100);
+            
+            document.getElementById('score-board').textContent = `Skor Sementara: ${score}`;
+        }
+
+        function nextQuestion() {
+            if (userAnswers[currentQuestionIndex] === null) {
+                alert("Silakan pilih jawaban terlebih dahulu!");
+                return;
+            }
+
+            if (currentQuestionIndex < currentQuestions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('main-header').textContent = `Kode Soal: PNC-STS-K3-S2-HOTS | Hasil Akhir`;
+            
+            const finalScore = Math.round(score);
+            document.getElementById('final-score').textContent = finalScore;
+            
+            let message = "";
+            if(finalScore >= 80) message = "Luar Biasa! Kamu sangat memahami makna keberagaman.";
+            else if(finalScore >= 60) message = "Bagus! Terus pelajari tentang kekayaan budaya kita.";
+            else message = "Tetap semangat! Mari belajar lagi tentang indahnya perbedaan.";
+            document.getElementById('result-message').textContent = message;
+
+            // Simpan ke riwayat
+            const date = new Date();
+            const waktu = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+            
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            history.unshift({
+                nama: currentUser.nama,
+                kelas: currentUser.kelas,
+                waktu: waktu,
+                skor: finalScore
+            });
+
+            // Batasi penyimpanan (misal 50 terbaru)
+            if (history.length > 50) history.pop();
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+        }
+    </script>
+</body>
+</html>

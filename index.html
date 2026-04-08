@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBS - SmartBankSoal STS Kelas 3</title>
+
+    <!-- GEMBOK KEAMANAN PWA -->
+    <script>
+        // Memeriksa status aktivasi untuk STS-K3-S2-HOTS
+        if (localStorage.getItem('sbs_active_status_STS-K3-S2-HOTS') !== 'true') {
+            window.location.replace("install.html");
+        }
+    </script>
+    <!-- =================== -->
+
+    <style>
+        /* Import Font yang ceria dari Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            /* Background warna-warni pastel ceria */
+            background: linear-gradient(135deg, #ffb3ba, #ffdfba, #ffffba, #baffc9, #bae1ff);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            flex: 1; /* Mengisi ruang sisa */
+            display: flex;
+            flex-direction: column;
+            border: 4px dashed #ffb3ba; /* Border putus-putus lucu */
+        }
+
+        header {
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            color: #ff6b6b; /* Merah ceria */
+            font-size: 2.5em;
+            text-shadow: 2px 2px 0px #fff, 4px 4px 0px rgba(0,0,0,0.1);
+            margin-bottom: 5px;
+        }
+
+        header h2 {
+            color: #4ecdc4; /* Tosca ceria */
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        /* Container untuk gambar */
+        .image-placeholder {
+            margin: 10px auto 30px auto;
+            max-width: 90%; /* Responsif */
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            border: 5px solid white;
+        }
+
+        .image-placeholder img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .button-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Grid responsif */
+            gap: 15px;
+            margin-bottom: auto; /* Mendorong footer ke bawah */
+        }
+
+        .btn {
+            display: block;
+            padding: 15px 20px;
+            text-decoration: none;
+            color: white;
+            font-weight: 900;
+            font-size: 1.1em;
+            border-radius: 12px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            cursor: pointer;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        /* Warna-warni tombol mata pelajaran */
+        .btn-pai { background-color: #2ecc71; box-shadow: 0 4px 0 #27ae60; }
+        .btn-pancasila { background-color: #e74c3c; box-shadow: 0 4px 0 #c0392b; }
+        .btn-bindo { background-color: #3498db; box-shadow: 0 4px 0 #2980b9; }
+        .btn-mtk { background-color: #9b59b6; box-shadow: 0 4px 0 #8e44ad; }
+        .btn-ipas { background-color: #f1c40f; color: #333; box-shadow: 0 4px 0 #f39c12; text-shadow: none;}
+        .btn-binggris { background-color: #e67e22; box-shadow: 0 4px 0 #d35400; }
+        .btn-bjawa { background-color: #1abc9c; box-shadow: 0 4px 0 #16a085; }
+        .btn-pjok { background-color: #34495e; box-shadow: 0 4px 0 #2c3e50; }
+        .btn-rekap { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+
+        /* Efek Hover (Ditekan) */
+        .btn:hover {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.2); /* Mengurangi bayangan saat ditekan */
+        }
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        /* Dekorasi ringan pada tombol */
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 200%; }
+            100% { left: 200%; }
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #666;
+            font-weight: 700;
+            line-height: 1.6;
+        }
+
+        .footer a {
+            color: #e74c3c;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Media Query untuk HP Layar Kecil */
+        @media (max-width: 480px) {
+            header h1 { font-size: 2em; }
+            .container { padding: 15px; border-width: 2px; }
+            .btn { font-size: 1em; padding: 12px 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>SBS SmartBankSoal</h1>
+            <h2>✨ Sumatif Tengah Semester (STS) ✨</h2>
+            <h2>Kelas 3 - Semester 2</h2>
+        </header>
+
+        <div class="image-placeholder">
+            <img src="baner-sbs.png" alt="Banner SBS">
+        </div>
+
+        <div class="button-layout">
+            <a href="soal/PAI-STS-K3-S2-HOTS.html" class="btn btn-pai">🕌 Pend. Agama Islam</a>
+            <a href="soal/PNC-STS-K3-S2-HOTS.html" class="btn btn-pancasila">🦅 Pancasila</a>
+            <a href="soal/IND-STS-K3-S2-HOTS.html" class="btn btn-bindo">📚 Bahasa Indonesia</a>
+            <a href="soal/MTK-STS-K3-S2-HOTS.html" class="btn btn-mtk">🧮 Matematika</a>
+            <a href="soal/IPAS-STS-K3-S2-HOTS.html" class="btn btn-ipas">🌱 IPAS</a>
+            <a href="soal/ENG-STS-K3-S2-HOTS.html" class="btn btn-binggris">🗣️ Bahasa Inggris</a>
+            <a href="soal/JWA-STS-K3-S2-HOTS.html" class="btn btn-bjawa">🎭 Bahasa Jawa</a>
+            <a href="soal/PJOK-STS-K3-S2-HOTS.html" class="btn btn-pjok">⚽ PJOK</a>
+            <a href="rekap.html" class="btn btn-rekap">REKAP</a>
+        </div>
+
+        <div class="footer">
+            2026, "Oleh : Dwi Endrasto - hak cipta dilindungi"<br>
+            Produk ini asli jika didapatkan/dibeli melalui <br>
+            <a href="https://lynk.id/smartbanksoal" target="_blank">https://lynk.id/smartbanksoal</a>
+        </div>
+    </div>
+
+    <div id="update-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; flex-direction: column; color: white;">
+        
+        <div id="update-notification" style="background: white; color: #333; padding: 30px; border-radius: 15px; text-align: center; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 3px solid #ffb3ba;">
+            <h3 style="margin-top: 0; color: #ff6b6b; font-weight: 900; font-size: 1.5em;">🔄 Update Tersedia!</h3>
+            <p style="font-size: 14px; color: #555; line-height: 1.5; font-weight: 700; margin-bottom: 20px;">Versi kuis terbaru dengan perbaikan skor telah tersedia. Silakan perbarui aplikasi sekarang.</p>
+            <button id="btn-update-app" style="background: #4ecdc4; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: 900; transition: 0.3s; box-shadow: 0 4px 0 #16a085;">
+                Perbarui Sekarang
+            </button>
+        </div>
+
+        <div id="progress-container" style="display: none; width: 80%; max-width: 320px; text-align: center;">
+            <h3 style="margin-bottom: 15px; font-weight: 700;">Memperbarui Sistem... <span id="progress-text" style="font-weight: 900; color: #4ecdc4;">0%</span></h3>
+            <div style="background: #e0e0e0; border-radius: 10px; height: 20px; width: 100%; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);">
+                <div id="progress-bar" style="background: #4ecdc4; height: 100%; width: 0%; transition: width 0.2s ease-out;"></div>
+            </div>
+            <p style="font-size: 12px; margin-top: 10px; color: #ddd; font-weight: bold;">Mohon tunggu sebentar, jangan tutup halaman ini.</p>
+        </div>
+
+    </div>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            let newWorker;
+            const updateOverlay = document.getElementById('update-overlay');
+            const updateNotification = document.getElementById('update-notification');
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const btnUpdate = document.getElementById('btn-update-app');
+
+            // 1. Mendaftarkan Service Worker
+            navigator.serviceWorker.register('sw.js').then(reg => {
+                console.log('Service Worker terdaftar.');
+                
+                // 2. Memantau apakah ada pembaruan versi (updatefound)
+                reg.addEventListener('updatefound', () => {
+                    newWorker = reg.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        // 3. Jika versi baru sudah didownload dan siap digunakan
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            // Tampilkan overlay notifikasi (mengkunci layar pengguna)
+                            updateOverlay.style.display = 'flex';
+                            updateNotification.style.display = 'block';
+                            progressContainer.style.display = 'none';
+                        }
+                    });
+                });
+            }).catch(error => {
+                console.log('Pendaftaran Service Worker gagal:', error);
+            });
+
+            // 4. Aksi saat tombol "Perbarui Sekarang" diklik
+            if(btnUpdate) {
+                btnUpdate.addEventListener('click', () => {
+                    // Sembunyikan pesan, tampilkan progress bar
+                    updateNotification.style.display = 'none';
+                    progressContainer.style.display = 'block';
+
+                    // Buat animasi progress bar jalan dari 0% ke 100%
+                    let progress = 0;
+                    let loadingInterval = setInterval(() => {
+                        // Naikkan persentase secara acak antara 5% - 15%
+                        progress += Math.floor(Math.random() * 11) + 5; 
+                        
+                        if (progress >= 100) {
+                            progress = 100;
+                            clearInterval(loadingInterval);
+                            
+                            // Setelah animasi 100%, suruh sw.js versi baru mengambil alih
+                            if (newWorker) {
+                                newWorker.postMessage({ type: 'SKIP_WAITING' });
+                            }
+                        }
+                        
+                        // Update UI Progress Bar
+                        progressBar.style.width = progress + '%';
+                        progressText.innerText = progress + '%';
+                    }, 250); // Kecepatan interval tiap 0.25 detik
+                });
+            }
+
+            // 5. Deteksi saat sw.js baru sudah mengambil alih, lalu Refresh halaman
+            let refreshing;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (refreshing) return;
+                refreshing = true;
+                // Beri sedikit jeda di angka 100% sebelum me-refresh halaman otomatis
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500);
+            });
+        }
+    </script>
+</body>
+</html>

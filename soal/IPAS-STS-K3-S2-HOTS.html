@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Interaktif IPAS</title>
+    <style>
+        /* Gaya Umum */
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Nunito:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            user-select: none; /* Anti Copy Paste */
+        }
+
+        /* Header & Footer */
+        header {
+            background-color: #ff6b6b;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-family: 'Comic Neue', cursive;
+            font-size: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+        }
+        
+        footer {
+            background-color: #1a1a1a;
+            color: #f1f1f1;
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            font-size: 14px;
+        }
+        
+        footer a {
+            color: #4da6ff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* Container Utama */
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            width: 90%;
+            border: 5px solid #ff9f43;
+        }
+
+        /* Tampilan Log In */
+        .login-screen {
+            text-align: center;
+        }
+        
+        .login-screen h1 {
+            color: #ff9f43;
+            font-family: 'Comic Neue', cursive;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        
+        input[type="text"] {
+            width: 80%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 3px solid #54a0ff;
+            border-radius: 10px;
+            font-size: 18px;
+            font-family: 'Nunito', sans-serif;
+            outline: none;
+        }
+        
+        .btn {
+            background-color: #1dd1a1;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: transform 0.2s, filter 0.2s;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+        
+        .btn-home {
+            background-color: #5f27cd;
+            display: block;
+            width: fit-content;
+            margin: 20px auto;
+            text-decoration: none;
+        }
+
+        /* Histori Skor */
+        .history-section {
+            margin-top: 30px;
+            background: #f8efba;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: left;
+        }
+        
+        .history-item {
+            background: white;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            border-left: 5px solid #ff9f43;
+        }
+
+        /* Tampilan Kuis */
+        .quiz-screen {
+            display: none;
+        }
+        
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .score-live {
+            font-size: 20px;
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        
+        .question-text {
+            font-size: 22px;
+            color: #2d3436;
+            margin-bottom: 20px;
+        }
+
+        .question-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none; /* Tampil jika ada gambar */
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .option-btn {
+            background-color: #c8d6e5;
+            color: #222f3e;
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-family: 'Nunito', sans-serif;
+            font-weight: bold;
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+        
+        .option-btn.correct { background-color: #1dd1a1 !important; color: white; }
+        .option-btn.wrong { background-color: #ff6b6b !important; color: white; }
+        
+        .discussion {
+            margin-top: 20px;
+            background-color: #c7ecee;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 5px solid #22a6b3;
+            display: none;
+            font-size: 16px;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .btn-nav {
+            background-color: #54a0ff;
+        }
+
+        @media (max-width: 600px) {
+            .options-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body oncopy="return false" oncut="return false" onpaste="return false">
+
+    <header>
+        KODE SOAL: IPAS-STS-K3-S2-HOTS
+    </header>
+
+    <div class="container">
+        <div id="loginScreen" class="login-screen">
+            <h1>Selamat Datang di Kuis Seru!</h1>
+            <input type="text" id="inputNama" placeholder="Masukkan Nama Lengkapmu..." required>
+            <input type="text" id="inputKelas" placeholder="Masukkan Kelasmu..." required>
+            
+            <button class="btn" onclick="mulaiKuis()">Mulai Kuis 🚀</button>
+            
+            <a href="../index.html" class="btn btn-home">🏠 Kembali ke Home</a>
+
+            <div class="history-section">
+                <h3>🏆 Riwayat Pencapaian Skor</h3>
+                <div id="historyList">Belum ada riwayat. Ayo jadi yang pertama!</div>
+            </div>
+        </div>
+
+        <div id="quizScreen" class="quiz-screen">
+            <div class="quiz-header">
+                <div>Soal <span id="currentQNum">1</span> / 25</div>
+                <div class="score-live">Skor Sementara: <span id="liveScore">0</span></div>
+            </div>
+
+            <img id="qImage" class="question-image" src="" alt="Gambar Soal">
+            <div id="qText" class="question-text">Teks pertanyaan akan muncul di sini...</div>
+            
+            <div id="optionsContainer" class="options-grid"></div>
+
+            <div id="qDiscussion" class="discussion"></div>
+
+            <div class="nav-buttons">
+                <button class="btn btn-nav" id="btnPrev" onclick="soalSebelumnya()">⬅️ Sebelumnya</button>
+                <button class="btn btn-nav" id="btnNext" onclick="soalSelanjutnya()" style="display:none;">Selanjutnya ➡️</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <span id="tahunFooter"></span> Oleh: Dwi Endrasto<br>
+        Produk ini asli jika didapatkan/dibeli melalui <a href="https://lynk.id/smartbanksoal" target="_blank">https://lynk.id/smartbanksoal</a>
+    </footer>
+
+    <script>
+        document.getElementById('tahunFooter').innerText = '@' + new Date().getFullYear();
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        const STORAGE_KEY = "IPAS_STS_K3_UNIQUE_HISTORY_88";
+
+        // ==========================================
+        // BANK SOAL
+        // ==========================================
+        const sumberSoal = [
+            // --- 10 SOAL BERGAMBAR ---
+            {
+                teks: "Perhatikan gambar matahari terbit di bawah ini. Jika kamu menghadap ke arah matahari tersebut, maka bagian kirimu menunjukkan...",
+                gambar: "gambar/ipas-gambar-soal-2.jpg", 
+                pilihan: ["Arah Timur", "Arah Barat", "Arah Utara", "Arah Selatan"],
+                jawaban: 2,
+                pembahasan: "Matahari terbit di Timur. Jika kita menghadap Timur, maka kiri kita adalah Utara."
+            },
+            {
+                teks: "Perhatikan gambar lambang daerah Kabupaten Jepara ini. Visi utama yang tercermin dari lambang daerah tersebut berkaitan dengan julukannya sebagai...",
+                gambar: "gambar/ipas-gambar-soal-3.jpg", 
+                pilihan: ["Kota Ukir", "Kota Pahlawan", "Kota Pelajar", "Kota Bahari"],
+                jawaban: 0,
+                pembahasan: "Jepara sangat identik dengan kerajinan seninya, sehingga memiliki visi dan julukan sebagai Kota Ukir."
+            },
+            {
+                teks: "Terdapat bangunan beton besar yang membentang di atas sungai pada gambar berikut. Bangunan ini diklasifikasikan sebagai...",
+                gambar: "gambar/ipas-gambar-soal-5.jpg", 
+                pilihan: ["Jembatan Beton", "Jalan Raya", "Gedung Tinggi", "Waduk Air"],
+                jawaban: 0,
+                pembahasan: "Benda beton yang dibangun manusia untuk melintasi sungai adalah jembatan beton, yang merupakan kenampakan buatan."
+            },
+            {
+                teks: "Berdasarkan bentang bumi pada gambar, bagian yang menjulang sangat tinggi dan sering bersuhu dingin termasuk dalam kenampakan daratan bernama...",
+                gambar: "gambar/ipas-gambar-soal-7.jpg", 
+                pilihan: ["Gunung Tinggi", "Sungai Dalam", "Laut Biru", "Danau Jernih"],
+                jawaban: 0,
+                pembahasan: "Gunung adalah kenampakan alam berupa daratan yang menonjol dan lebih tinggi dari sekitarnya."
+            },
+            {
+                teks: "Perhatikan dua jenis dokumen resmi pemerintah berikut. Dokumen yang berisi daftar anggota keluarga di rumah disebut...",
+                gambar: "gambar/ipas-gambar-soal-8.jpg", 
+                pilihan: ["Kartu Keluarga", "Rapor Kelas", "Buku Catatan", "Surat Izin"],
+                jawaban: 0,
+                pembahasan: "Kartu Keluarga (KK) adalah kartu identitas resmi yang memuat data susunan dan hubungan dalam keluarga."
+            },
+            {
+                teks: "Gambar denah rumpang berikut belum lengkap. Agar orang tahu mana arah utara dan selatan, komponen wajib yang harus ditambahkan adalah...",
+                gambar: "gambar/ipas-gambar-soal-12.jpg", 
+                pilihan: ["Mata Angin", "Warna Kertas", "Bentuk Garis", "Tebal Huruf"],
+                jawaban: 0,
+                pembahasan: "Arah mata angin sangat penting dalam denah untuk menentukan orientasi arah lokasi."
+            },
+            {
+                teks: "Terdapat gambar logo Kota A dan Kota B yang berbeda wujudnya. Kesimpulan alasan utama mengapa kedua kota ini memiliki logo yang berbeda adalah karena...",
+                gambar: "gambar/ipas-gambar-soal-13.jpg", 
+                pilihan: ["Beda Ciri", "Beda Kertas", "Beda Warna", "Beda Ukuran"],
+                jawaban: 0,
+                pembahasan: "Setiap daerah memiliki sejarah, budaya, dan potensi yang membedakan ciri khas logonya."
+            },
+            {
+                teks: "Jarum merah pada alat kompas yang tampak pada gambar selalu menunjuk ke titik magnetik bumi, yang menandakan arah utama yaitu...",
+                gambar: "gambar/ipas-gambar-soal-14.jpg", 
+                pilihan: ["Arah Utara", "Bawah Atas", "Kanan Kiri", "Depan Belakang"],
+                jawaban: 0,
+                pembahasan: "Jarum kompas berwana merah selalu menunjuk ke arah kutub utara magnet bumi."
+            },
+            {
+                teks: "Perhatikan diagram hierarki organisasi warga berikut. Organisasi Rukun Tetangga dibentuk dari kumpulan beberapa...",
+                gambar: "gambar/ipas-gambar-soal-17.jpg", 
+                pilihan: ["Kepala Keluarga", "Rukun Warga", "Kepala Desa", "Bupati Daerah"],
+                jawaban: 0,
+                pembahasan: "Rukun Tetangga (RT) adalah lembaga yang dibentuk dari beberapa Kepala Keluarga di lingkungan tersebut."
+            },
+            {
+                teks: "Gambar pemandangan air yang luas dikelilingi daratan berikut terjadi karena proses alamiah tanpa campur tangan manusia. Wilayah perairan ini disebut...",
+                gambar: "gambar/ipas-gambar-soal-18.jpg", 
+                pilihan: ["Danau Alami", "Kolam Renang", "Waduk Buatan", "Tambak Ikan"],
+                jawaban: 0,
+                pembahasan: "Danau adalah genangan air amat luas yang dikelilingi daratan dan terbentuk secara alami."
+            },
+
+            // --- 15 SOAL TEKS (TANPA GAMBAR) ---
+            {
+                teks: "Saat Budi berada di perpustakaan, ia melihat gambar petunjuk letak rak buku agar tidak tersesat. Gambar penunjuk lokasi tersebut disebut...",
+                gambar: "", 
+                pilihan: ["Gambar Denah", "Sketsa Peta", "Bagan Lokasi", "Peta Jalan"],
+                jawaban: 0,
+                pembahasan: "Gambar yang menunjukkan letak suatu tempat atau benda dalam ruangan disebut denah."
+            },
+            {
+                teks: "Keluarga Siti baru saja pindah rumah. Untuk melapor sebagai warga baru di lingkungan yang paling kecil, ayah Siti harus menemui...",
+                gambar: "",
+                pilihan: ["Ketua RT", "Ketua RW", "Kepala Desa", "Bupati Daerah"],
+                jawaban: 0,
+                pembahasan: "RT (Rukun Tetangga) adalah organisasi masyarakat terkecil di bawah RW."
+            },
+            {
+                teks: "Saat liburan, paman sering melihat denah digital dari HP-nya saat mengemudi. Manfaat utama menggunakan aplikasi denah digital tersebut adalah untuk...",
+                gambar: "",
+                pilihan: ["Cari Lokasi", "Cari Makan", "Cari Teman", "Cari Barang"],
+                jawaban: 0,
+                pembahasan: "Denah digital (seperti peta di HP) paling bermanfaat untuk mencari rute atau cari lokasi tujuan dengan akurat."
+            },
+            {
+                teks: "Agar seluruh peraturan sekolah berjalan tertib, ada seorang pemimpin yang mengatur dan memimpin seluruh guru dan siswa. Ia disebut...",
+                gambar: "",
+                pilihan: ["Kepala Sekolah", "Wali Kota", "Bupati Daerah", "Ketua RT"],
+                jawaban: 0,
+                pembahasan: "Kepala Sekolah adalah pimpinan tertinggi di lingkungan sekolah."
+            },
+            {
+                teks: "Sebuah hutan yang lebat ditebang habis dan diubah menjadi area perumahan warga. Dampak perubahan lingkungan ini dapat menyebabkan...",
+                gambar: "",
+                pilihan: ["Suhu Panas", "Udara Sejuk", "Hutan Lebat", "Air Melimpah"],
+                jawaban: 0,
+                pembahasan: "Berkurangnya pepohonan membuat daerah resapan air hilang dan menyebabkan suhu panas karena tidak ada peneduh."
+            },
+            {
+                teks: "Saat mengisi formulir pendaftaran sekolah, Dodi harus menuliskan alamat tempat tinggalnya. Wilayah administratif yang tingkatannya persis di bawah Kecamatan adalah...",
+                gambar: "",
+                pilihan: ["Tingkat Desa", "Tingkat Kota", "Tingkat Provinsi", "Tingkat Negara"],
+                jawaban: 0,
+                pembahasan: "Kecamatan membawahi beberapa wilayah tingkat desa atau kelurahan."
+            },
+            {
+                teks: "Dalam sebuah musyawarah desa, sering kali warga memiliki pendapat yang berbeda-beda. Alasan perlunya seorang pemimpin dalam musyawarah tersebut adalah untuk...",
+                gambar: "",
+                pilihan: ["Atur Warga", "Bikin Ribut", "Buat Sepi", "Cari Musuh"],
+                jawaban: 0,
+                pembahasan: "Pemimpin berfungsi untuk mengatur warga, menengahi perbedaan, dan mengambil keputusan bersama."
+            },
+            {
+                teks: "Siti ingin menggambar rumahnya di atas selembar kertas. Agar pas di kertas, ukuran gambar rumah Siti pada denah tentu saja harus...",
+                gambar: "",
+                pilihan: ["Ukuran Kecil", "Sama Besar", "Sangat Lebar", "Lebih Tinggi"],
+                jawaban: 0,
+                pembahasan: "Denah digambar dengan skala tertentu sehingga wujudnya berukuran kecil dibanding ukuran aslinya."
+            },
+            {
+                teks: "Menjelang akhir tahun, masyarakat melakukan pemungutan suara dalam Pilkada untuk memilih seorang kepala daerah yang memimpin tingkat kabupaten, yaitu...",
+                gambar: "",
+                pilihan: ["Bupati Daerah", "Wali Kota", "Kepala Desa", "Ketua RT"],
+                jawaban: 0,
+                pembahasan: "Kepala daerah untuk wilayah administrasi Kabupaten dipimpin oleh seorang Bupati."
+            },
+            {
+                teks: "Jika di dalam kelas tidak ada guru dan belum dipilih seorang ketua kelas, maka kondisi proses belajar mengajar di kelas tersebut kemungkinan besar akan...",
+                gambar: "",
+                pilihan: ["Sangat Kacau", "Sangat Tertib", "Sangat Tenang", "Sangat Rajin"],
+                jawaban: 0,
+                pembahasan: "Tanpa adanya pemimpin, tidak ada yang mengkoordinir keadaan sehingga suasana menjadi tidak teratur atau sangat kacau."
+            },
+            {
+                teks: "Saat kita ingin mencari rute jalan menuju rumah teman yang baru pertama kali dikunjungi, alat bantu gambar penunjuk lokasi yang paling tepat digunakan adalah...",
+                gambar: "",
+                pilihan: ["Gambar Denah", "Buku Tulis", "Kertas Kosong", "Papan Tulis"],
+                jawaban: 0,
+                pembahasan: "Denah membantu kita menemukan letak suatu tempat agar tidak tersesat."
+            },
+            {
+                teks: "Para lurah dan kepala desa berkumpul di balai pertemuan untuk menerima arahan dari pemimpin wilayah di atas mereka. Jabatan pemimpin yang memberi arahan tersebut adalah...",
+                gambar: "",
+                pilihan: ["Camat Setempat", "Bupati Daerah", "Kepala Desa", "Ketua RT"],
+                jawaban: 0,
+                pembahasan: "Pemimpin yang membawahi kelurahan dan desa di suatu wilayah adalah Camat."
+            },
+            {
+                teks: "Pemandangan pegunungan dan bukit-bukit hijau merupakan lingkungan yang membentang di atas permukaan bumi. Kelompok lingkungan ini termasuk dalam...",
+                gambar: "",
+                pilihan: ["Alam Daratan", "Alam Perairan", "Buatan Manusia", "Lingkungan Sekolah"],
+                jawaban: 0,
+                pembahasan: "Gunung dan bukit adalah bagian dari permukaan bumi yang padat, sehingga masuk ke wilayah daratan."
+            },
+            {
+                teks: "Di sore hari, langit berwarna jingga karena matahari mulai tenggelam ke bawah ufuk. Jika kamu melihat ke arah matahari tenggelam, berarti kamu menghadap...",
+                gambar: "",
+                pilihan: ["Arah Barat", "Arah Timur", "Arah Utara", "Arah Selatan"],
+                jawaban: 0,
+                pembahasan: "Matahari selalu terbit di sebelah timur dan terbenam (tenggelam) di sebelah barat."
+            },
+            {
+                teks: "Pada seragam baju dinas bapak bupati, terdapat lencana bergambar padi dan kapas yang dijahit rapi. Istilah untuk gambar lambang daerah pada lencana tersebut adalah...",
+                gambar: "",
+                pilihan: ["Logo Daerah", "Tanda Tangan", "Nama Orang", "Gelar Jabatan"],
+                jawaban: 0,
+                pembahasan: "Lambang suatu daerah yang menggambarkan ciri khas dan filosofi wilayahnya sering disebut logo daerah."
+            }
+        ];
+
+        let stateKuis = {
+            soalAcak: [],
+            indeksSekarang: 0,
+            skor: 0,
+            jawabanSiswa: []
+        };
+
+        let dataSiswa = { nama: "", kelas: "" };
+
+        function acakArray(arr) {
+            let acak = [...arr];
+            for (let i = acak.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [acak[i], acak[j]] = [acak[j], acak[i]];
+            }
+            return acak;
+        }
+
+        function renderRiwayat() {
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            const list = document.getElementById('historyList');
+            if (history.length > 0) {
+                list.innerHTML = history.map(h => 
+                    `<div class="history-item">
+                        <strong>${h.nama}</strong> (Kls: ${h.kelas}) - Skor: <strong>${h.skor}</strong><br>
+                        <small>🕒 ${h.waktu}</small>
+                    </div>`
+                ).join('');
+            }
+        }
+        renderRiwayat();
+
+        function mulaiKuis() {
+            const nama = document.getElementById('inputNama').value.trim();
+            const kelas = document.getElementById('inputKelas').value.trim();
+            
+            if(!nama || !kelas) {
+                alert("Isi Nama dan Kelas dulu ya!");
+                return;
+            }
+            
+            dataSiswa = { nama, kelas };
+            
+            let persiapanSoal = sumberSoal.map(s => {
+                let pilihanAsli = s.pilihan.map((teks, index) => ({ teks, isBenar: index === s.jawaban }));
+                return {
+                    ...s,
+                    pilihanAcak: acakArray(pilihanAsli)
+                };
+            });
+
+            // 3. RESET VARIABEL SECARA MENYELURUH
+            stateKuis.soalAcak = acakArray(persiapanSoal);
+            stateKuis.indeksSekarang = 0;
+            stateKuis.skor = 0;
+            // Panjang array disesuaikan secara dinamis, bukan hardcode 25
+            stateKuis.jawabanSiswa = new Array(stateKuis.soalAcak.length).fill(null);
+
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'block';
+            
+            renderSoal();
+        }
+
+        function renderSoal() {
+            const soalData = stateKuis.soalAcak[stateKuis.indeksSekarang];
+            const qNum = stateKuis.indeksSekarang + 1;
+            
+            document.getElementById('currentQNum').innerText = qNum;
+            document.getElementById('liveScore').innerText = stateKuis.skor;
+            document.getElementById('qText').innerText = soalData.teks;
+            
+            const qImg = document.getElementById('qImage');
+            if(soalData.gambar) {
+                qImg.src = soalData.gambar;
+                qImg.style.display = 'block';
+            } else {
+                qImg.style.display = 'none';
+            }
+
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            const sudahDijawab = stateKuis.jawabanSiswa[stateKuis.indeksSekarang];
+            const btnNext = document.getElementById('btnNext');
+
+            soalData.pilihanAcak.forEach((pil, btnIndex) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = pil.teks;
+                
+                if (sudahDijawab !== null) {
+                    btn.disabled = true;
+                    if (pil.isBenar) btn.classList.add('correct');
+                    if (sudahDijawab.terpilih === btnIndex && !pil.isBenar) btn.classList.add('wrong');
+                } else {
+                    btn.onclick = () => pilihJawaban(btnIndex, pil.isBenar);
+                }
+                
+                container.appendChild(btn);
+            });
+
+            const pembahasanBox = document.getElementById('qDiscussion');
+            if (sudahDijawab !== null) {
+                pembahasanBox.innerHTML = `<strong>Pembahasan:</strong><br>${soalData.pembahasan}`;
+                pembahasanBox.style.display = 'block';
+                btnNext.style.display = 'block'; // Tampilkan tombol next jika soal sudah terjawab
+            } else {
+                pembahasanBox.style.display = 'none';
+                btnNext.style.display = 'none'; // Sembunyikan tombol next jika belum dijawab
+            }
+
+            document.getElementById('btnPrev').style.visibility = stateKuis.indeksSekarang === 0 ? 'hidden' : 'visible';
+            
+            if (stateKuis.indeksSekarang === stateKuis.soalAcak.length - 1) {
+                btnNext.innerText = 'Selesai & Simpan 💾';
+                btnNext.onclick = simpanSkor;
+            } else {
+                btnNext.innerText = 'Selanjutnya ➡️';
+                btnNext.onclick = soalSelanjutnya;
+            }
+        }
+
+        function pilihJawaban(btnIndex, isBenar) {
+            // 1. SISTEM FLAGGING: Mencegah eksekusi ganda jika diklik sangat cepat (spam click)
+            if (stateKuis.jawabanSiswa[stateKuis.indeksSekarang] !== null) return;
+
+            // Catat pilihan siswa dan juga status apakah itu benar atau salah
+            stateKuis.jawabanSiswa[stateKuis.indeksSekarang] = { 
+                terpilih: btnIndex, 
+                isBenar: isBenar 
+            };
+            
+            updateSkorDisplay(); // Panggil fungsi penghitung skor aman
+            
+            renderSoal();
+        }
+
+        function updateSkorDisplay() {
+            // 4. PERHITUNGAN BERBASIS PERSENTASE
+            // Menghitung berapa banyak nilai 'isBenar' yang true di dalam memori
+            const jumlahBenar = stateKuis.jawabanSiswa.filter(j => j !== null && j.isBenar).length;
+            
+            let skorHitung = (jumlahBenar / stateKuis.soalAcak.length) * 100;
+
+            // 2. FUNGSI PEMBATAS (LIMITER): Mengunci skor maksimal mutlak di angka 100
+            stateKuis.skor = Math.min(Math.round(skorHitung), 100);
+            
+            document.getElementById('liveScore').innerText = stateKuis.skor;
+        }
+
+        function soalSelanjutnya() {
+            if (stateKuis.indeksSekarang < stateKuis.soalAcak.length - 1) {
+                stateKuis.indeksSekarang++;
+                renderSoal();
+            }
+        }
+
+        function soalSebelumnya() {
+            if (stateKuis.indeksSekarang > 0) {
+                stateKuis.indeksSekarang--;
+                renderSoal(); // Saat mundur, fungsi ini otomatis me-render status Read-Only dari Flagging
+            }
+        }
+
+        function simpanSkor() {
+            if(confirm("Kuis selesai! Apakah kamu yakin ingin menyimpan skormu?")) {
+                const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+                const d = new Date();
+                const waktuFormatted = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+                
+                history.push({
+                    nama: dataSiswa.nama,
+                    kelas: dataSiswa.kelas,
+                    skor: stateKuis.skor,
+                    waktu: waktuFormatted
+                });
+                
+                // Limiter untuk memori browser (misal simpan 50 riwayat terakhir saja)
+                if(history.length > 50) history.shift();
+
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+                alert(`Selamat ${dataSiswa.nama}, Skor Kamu: ${stateKuis.skor}`);
+                window.location.reload();
+            }
+        }
+    </script>
+</body>
+</html>

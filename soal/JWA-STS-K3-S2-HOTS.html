@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="jv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Sumatif Tengah Semester - Bahasa Jawa Kelas 3</title>
+    <style>
+        /* Variabel Warna & Reset */
+        :root {
+            --dark-elegant: #1a1a2e;
+            --text-light: #e94560;
+            --correct: #28a745;
+            --incorrect: #dc3545;
+            --primary: #4e54c8;
+            --secondary: #8f94fb;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        /* Proteksi Tampilan (Anti-Select) */
+        body {
+            user-select: none; /* Anti copy-paste */
+            -webkit-user-select: none;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #333;
+        }
+
+        /* Header & Footer Gelap Elegan */
+        header, footer {
+            background-color: var(--dark-elegant);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+        footer a { color: var(--text-light); text-decoration: none; font-weight: bold; }
+        
+        /* Layout Utama */
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        /* Login Screen */
+        .login-screen { display: block; text-align: center; }
+        .login-screen h2 { color: var(--primary); margin-bottom: 20px; }
+        input[type="text"] {
+            width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #ddd;
+            border-radius: 8px; font-size: 16px;
+        }
+        
+        /* Tombol */
+        button {
+            padding: 12px 25px; border: none; border-radius: 8px; font-size: 16px;
+            cursor: pointer; font-weight: bold; transition: 0.3s;
+            background-color: var(--primary); color: white; margin: 5px;
+        }
+        button:hover { background-color: #383db0; }
+        .btn-home { background-color: #f39c12; margin-bottom: 15px; width: 100%; }
+        .btn-home:hover { background-color: #d68910; }
+        .btn-nav { background-color: #6c757d; }
+        
+        /* Quiz Screen */
+        .quiz-screen { display: none; }
+        .options-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 20px; }
+        .option {
+            background: #f8f9fa; border: 2px solid #ddd; padding: 15px; border-radius: 8px;
+            cursor: pointer; transition: 0.2s; text-align: left;
+        }
+        .option:hover { background: #e2e6ea; }
+        .option.correct { background: var(--correct); color: white; border-color: var(--correct); }
+        .option.incorrect { background: var(--incorrect); color: white; border-color: var(--incorrect); }
+        .option.disabled { pointer-events: none; }
+
+        /* Pembahasan & Navigasi */
+        .explanation {
+            margin-top: 20px; padding: 15px; background: #e3f2fd; border-left: 5px solid #2196f3;
+            border-radius: 5px; display: none; font-style: italic;
+        }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 20px; }
+        
+        /* Riwayat Skor */
+        .history-table {
+            width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 14px;
+        }
+        .history-table th, .history-table td {
+            border: 1px solid #ddd; padding: 8px; text-align: center;
+        }
+        .history-table th { background-color: var(--primary); color: white; }
+    </style>
+</head>
+<body oncontextmenu="return false;"> <header>
+        <h3 id="header-code">JWA-STS-K3-S2-HOTS</h3>
+    </header>
+
+    <main>
+        <div class="container login-screen" id="loginScreen">
+            <h2>Kuis Sumatif Basa Jawa SD</h2>
+            <input type="text" id="inputNama" placeholder="Lebokna Jeneng Lengkap..." required>
+            <input type="text" id="inputKelas" placeholder="Lebokna Kelas..." required>
+            
+            <button onclick="window.location.href='../index.html'" class="btn-home">Kembali ke Home</button>
+            <button onclick="startQuiz()" style="width: 100%; margin-bottom: 20px;">Mulai Kuis</button>
+
+            <h3>Riwayat Skor</h3>
+            <table class="history-table">
+                <thead><tr><th>Nama</th><th>Kelas</th><th>Skor</th><th>Waktu</th></tr></thead>
+                <tbody id="historyBody"></tbody>
+            </table>
+        </div>
+
+        <div class="container quiz-screen" id="quizScreen">
+            <h4 style="text-align: right; color: var(--primary);">Skor: <span id="currentScore">0</span></h4>
+            <h3 id="questionText" style="margin-top: 10px;">Pertanyaan dimuat...</h3>
+            <div class="options-grid" id="optionsContainer"></div>
+            
+            <div class="explanation" id="explanationBox"></div>
+            
+            <div class="nav-buttons">
+                <button class="btn-nav" id="btnPrev" onclick="prevQuestion()" style="display:none;">Soal Sebelumnya</button>
+                <button class="btn-nav" id="btnNext" onclick="nextQuestion()" style="display:none;">Soal Selanjutnya</button>
+                <button class="btn-nav" id="btnFinish" onclick="finishQuiz()" style="display:none; background-color: var(--correct);">Selesai</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Oleh: Dwi Endrasto, Produk ini asli jika didapatkan/dibeli melalui <a href="https://lynk.id/smartbanksoal" target="_blank">https://lynk.id/smartbanksoal</a></p>
+    </footer>
+
+    <script>
+        // Mencegah Copy Paste
+        document.addEventListener('copy', (e) => { e.preventDefault(); alert('Ngapunten, mboten pareng copy-paste nggih!'); });
+
+        // DATABASE SOAL (25 Soal, Bahasa Jawa, HOTS, Jumlah kata opsi disamakan per soal)
+        const bankSoal = [
+            { // 1
+                q: "Bapak pocung dudu watu dudu gunung, sabamu ing sendhang... Tembang iki kelebu jenis napa?",
+                opts: ["Tembang macapat pocung", "Tembang macapat gambuh", "Tembang macapat pangkur", "Tembang macapat kinanthi"],
+                ans: "Tembang macapat pocung",
+                exp: "Bener! Tembang kasebut minangka tuladha saka tembang macapat Pocung sing biasane kanggo cangkriman (tebak-tebakan)."
+            },
+            { // 2
+                q: "Guru gatra tembang pocung iku cacahe ana pira saben sapada?",
+                opts: ["Ana patang gatra", "Ana limang gatra", "Ana nem gatra", "Ana pitung gatra"],
+                ans: "Ana patang gatra",
+                exp: "Bener! Tembang Pocung nduweni 4 gatra (baris) saben sapada (bait)."
+            },
+            { // 3
+                q: "Tembang pocung asring digunakake kanggo menehi cangkriman. Tembung 'batangan' tegese...",
+                opts: ["Wangsulan saka cangkriman", "Pitakonan saka cangkriman", "Tembang saka cangkriman", "Gancaran saka cangkriman"],
+                ans: "Wangsulan saka cangkriman",
+                exp: "Batangan iku tegese tebakan utawa wangsulan (jawaban) saka cangkriman ing tembang pocung."
+            },
+            { // 4
+                q: "Ing crita Rawa Pening, sapa paraga sing wujud naga nanging bisa tata jalma?",
+                opts: ["Bocah Baru Klinting", "Bocah Jaka Tarub", "Bocah Kleting Kuning", "Bocah Ande Ande"],
+                ans: "Bocah Baru Klinting",
+                exp: "Baru Klinting iku paraga utama wujud naga sing bisa malih dadi bocah bajang."
+            },
+            { // 5
+                q: "Warga desa padha 'geger' amarga ana bocah bajang nyabut sada. Tembung geger tegese...",
+                opts: ["Rame utawa kisruh", "Meneng utawa sepi", "Mangan utawa ngombe", "Turu utawa ngaso"],
+                ans: "Rame utawa kisruh",
+                exp: "Tembung geger tegese swasana sing rame, ribut, utawa kisruh."
+            },
+            { // 6
+                q: "Kepriye watake tembang macapat Pocung yen dititi saka isine?",
+                opts: ["Sembrana lan guyon", "Sedhih lan nelangsa", "Nesunan lan galak", "Wani lan teges"],
+                ans: "Sembrana lan guyon",
+                exp: "Watake tembang Pocung iku kendho, tanpa greget, sembrana parikena, utawa kanggo geguyon."
+            },
+            { // 7
+                q: "Guru lagune tembang Pocung yaiku...",
+                opts: ["U, A, I, A", "A, I, U, A", "U, I, A, I", "A, U, A, I"],
+                ans: "U, A, I, A",
+                exp: "Aturan guru lagu tembang Pocung yaiku u, a, i, a ing pungkasan gatra."
+            },
+            { // 8
+                q: "Tembang macapat kang nggambarake manungsa nalika wis dadi layon (mayit) banjur dibungkus mori yaiku...",
+                opts: ["Tembang wujud pocung", "Tembang wujud pangkur", "Tembang wujud mijil", "Tembang wujud sinom"],
+                ans: "Tembang wujud pocung",
+                exp: "Pocung asale saka tembung pocong, nggambarake pungkasaning urip manungsa."
+            },
+            { // 9
+                q: "Bapak pocung renteng-renteng kaya kalung, dawa kaya ula... Batangane cangkriman iki yaiku...",
+                opts: ["Sepur utawa kereta", "Motor utawa mobil", "Kapal utawa prahu", "Pesawat utawa miber"],
+                ans: "Sepur utawa kereta",
+                exp: "Cangkriman iki nggambarake sepur sing bentuke dawa lan gerbonge renteng-renteng."
+            },
+            { // 10
+                q: "Ukara pitakon sing trep kanggo takon babagan guru wilangan tembang Pocung yaiku...",
+                opts: ["Pira cacahing wanda?", "Sapa sing nggawe?", "Ing ngendi panggonane?", "Kapan kudu ditembangake?"],
+                ans: "Pira cacahing wanda?",
+                exp: "Guru wilangan iku tegese cacahing wanda (suku kata) saben sagatra."
+            },
+            { // 11
+                q: "Sapa sing nulungi Baru Klinting menehi sega nalika dicecewe dening warga desa?",
+                opts: ["Simbah randha tuwa", "Bapak lurah desa", "Simbah kakung tuwa", "Bocah cilik desa"],
+                ans: "Simbah randha tuwa",
+                exp: "Mung simbah randha (Mbok Randha) sing welas asih menehi mangan Baru Klinting."
+            },
+            { // 12
+                q: "Apa sing ditancepake Baru Klinting ing lemah minangka sayembara kanggo warga desa?",
+                opts: ["Sada utawa lidi", "Keris utawa pedhang", "Kayu utawa pring", "Batu utawa krikil"],
+                ans: "Sada utawa lidi",
+                exp: "Baru Klinting nancepake sada (lidi) sing ora ana siji-sijia warga sing bisa nyabut."
+            },
+            { // 13
+                q: "Amanat apa sing bisa dijupuk saka tumindake warga desa marang Baru Klinting?",
+                opts: ["Aja seneng ngina", "Aja seneng weweh", "Aja seneng tetulung", "Aja seneng memitran"],
+                ans: "Aja seneng ngina",
+                exp: "Crita iki ngajarke supaya kita ora ngina utawa ngeremehake wong liya sanajan wujude elek."
+            },
+            { // 14
+                q: "Crita Rawa Pening iku kalebu jinise crita rakyat apa?",
+                opts: ["Crita wujud legendha", "Crita wujud fabel", "Crita wujud mite", "Crita wujud sage"],
+                ans: "Crita wujud legendha",
+                exp: "Rawa Pening kalebu legendha amarga nyritakake asal-usul dumadine sawijining panggonan."
+            },
+            { // 15
+                q: "Crita rakyat sing paragane kewan lan bisa guneman kaya manungsa diarani...",
+                opts: ["Jinising crita fabel", "Jinising crita mite", "Jinising crita sage", "Jinising crita legendha"],
+                ans: "Jinising crita fabel",
+                exp: "Fabel yaiku crita sing tokoh utamane kewan sing duwe tindak-tanduk kaya manungsa."
+            },
+            { // 16
+                q: "Ing tembang Pocung ana tembung 'Saba'. Tembung saba iku tegese...",
+                opts: ["Lunga utawa dolan", "Turu utawa ngaso", "Mangan utawa ngombe", "Nangis utawa sedhih"],
+                ans: "Lunga utawa dolan",
+                exp: "Saba tegese seneng dolan utawa nglayap menyang panggonan liya."
+            },
+            { // 17
+                q: "Ngelmu iku kalakone kanthi laku. Gatra iki tegese golek ilmu kudu...",
+                opts: ["Dibuktekake nganggo tumindak", "Ditulis nganggo buku", "Dadi wong pinter", "Dadi wong sugih"],
+                ans: "Dibuktekake nganggo tumindak",
+                exp: "Ngelmu iku kudu dipraktekake utawa diwujudake ing tumindak (laku), ora mung diapalake."
+            },
+            { // 18
+                q: "Legendha Rawa Pening iku crita rakyat sing asale saka daerah...",
+                opts: ["Provinsi Jawa Tengah", "Provinsi Jawa Timur", "Provinsi Jawa Barat", "Provinsi Daerah Istimewa"],
+                ans: "Provinsi Jawa Tengah",
+                exp: "Danau Rawa Pening mapan ing Kabupaten Semarang, Jawa Tengah."
+            },
+            { // 19
+                q: "Perkara utama sing dialami Baru Klinting nalika teka ing desa yaiku...",
+                opts: ["Ditolak lan diusir", "Disambut lan dipuji", "Diwenehi omah gedhe", "Diwenehi sandhangan apik"],
+                ans: "Ditolak lan diusir",
+                exp: "Baru Klinting ditolak amarga wujude sing ala lan mambu, mula ora ana sing gelem nampa."
+            },
+            { // 20
+                q: "Pesene Mbok Randha sadurunge desa kerem yaiku numpak lesung. Lesung digunakake minangka...",
+                opts: ["Perahu kanggo nylametake", "Wadah kanggo beras", "Omah kanggo ndhelik", "Gaman kanggo perang"],
+                ans: "Perahu kanggo nylametake",
+                exp: "Lesung ditunggangi Mbok Randha kaya dene perahu supaya slamet saka banjir bandhang."
+            },
+            { // 21
+                q: "Tembung 'kalakone' ing tembang pocung ngelmu iku nduweni teges...",
+                opts: ["Bisa dadi nyata", "Ora bisa nyata", "Mung dadi impen", "Mung dadi warta"],
+                ans: "Bisa dadi nyata",
+                exp: "Kalakone tegese kedadeyan, kelakon, utawa bisa diwujudake."
+            },
+            { // 22
+                q: "Tembang macapat iku kaiket dening paugeran telu, yaiku guru gatra, guru lagu, lan...",
+                opts: ["Aturan guru wilangan", "Aturan guru basa", "Aturan guru swara", "Aturan guru sastra"],
+                ans: "Aturan guru wilangan",
+                exp: "Paugeran macapat iku ana telu: guru gatra (baris), guru wilangan (suku kata), lan guru lagu (vokal pungkasan)."
+            },
+            { // 23
+                q: "Crita Nyi Roro Kidul miturut jinise kalebu crita rakyat wujud...",
+                opts: ["Crita jinis mite", "Crita jinis fabel", "Crita jinis sage", "Crita jinis legendha"],
+                ans: "Crita jinis mite",
+                exp: "Mite (mitos) nyritakake babagan dewa-dewi utawa alam gaib sing dianggep suci."
+            },
+            { // 24
+                q: "Tokoh antagonis (sing duwe watak ala) ing crita Bawang Merah Bawang Putih yaiku...",
+                opts: ["Bocah Bawang Merah", "Bocah Bawang Putih", "Simbah Iwak Emas", "Pangeran Bagus Pisan"],
+                ans: "Bocah Bawang Merah",
+                exp: "Bawang Merah lan ibune nduweni watak ala lan seneng nyiksa Bawang Putih."
+            },
+            { // 25
+                q: "Terusane gatra tembang pocung iki: 'Ngelmu iku, kalakone kanthi laku, lekase lawan kas, tegese kas nyantosani,...",
+                opts: ["Setya budya pangekese dur angkara", "Setya budya pangekese ing dunya", "Setya budya pangekese ing ati", "Setya budya pangekese ing jiwa"],
+                ans: "Setya budya pangekese dur angkara",
+                exp: "Bener! Iku padha kapisan Serat Wedhatama pupuh Pocung anggitane KGPAA Mangkunegara IV."
+            }
+        ];
+
+        let questions = [];
+        let currentIdx = 0;
+        let score = 0;
+        let userAnswers = [];
+        let userName = '';
+        let userClass = '';
+        const STORAGE_KEY = 'JWA-STS-K3-S2-HOTS_HISTORY';
+
+        // Acak Array (Fisher-Yates)
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Mulai Kuis
+        function startQuiz() {
+            userName = document.getElementById('inputNama').value.trim();
+            userClass = document.getElementById('inputKelas').value.trim();
+            
+            if(!userName || !userClass) {
+                alert("Ngapunten, jeneng lan kelas kedah diisi rumiyin!");
+                return;
+            }
+
+            // Acak urutan soal
+            questions = shuffle([...bankSoal]).map(q => {
+                let options = shuffle([...q.opts]);
+                return { ...q, opts: options };
+            });
+
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'block';
+            currentIdx = 0;
+            score = 0;
+            
+            // 3. RESET VARIABEL SECARA MENYELURUH (Panjang Array Dinamis)
+            userAnswers = new Array(questions.length).fill(null);
+            
+            updateScore();
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questions[currentIdx];
+            document.getElementById('questionText').innerText = `${currentIdx + 1}. ${q.q}`;
+            const optsContainer = document.getElementById('optionsContainer');
+            optsContainer.innerHTML = '';
+            document.getElementById('explanationBox').style.display = 'none';
+
+            q.opts.forEach(opt => {
+                const btn = document.createElement('div');
+                btn.className = 'option';
+                btn.innerText = opt;
+                
+                // CEK FLAGGING: Jika sudah pernah dijawab
+                if(userAnswers[currentIdx] !== null) {
+                    btn.classList.add('disabled');
+                    if(opt === q.ans) btn.classList.add('correct');
+                    else if(opt === userAnswers[currentIdx].selected && opt !== q.ans) btn.classList.add('incorrect');
+                } else {
+                    btn.onclick = () => selectOption(btn, opt, q.ans, q.exp);
+                }
+                optsContainer.appendChild(btn);
+            });
+
+            // Tampilkan pembahasan jika sudah dijawab
+            if(userAnswers[currentIdx] !== null) {
+                const expBox = document.getElementById('explanationBox');
+                expBox.innerText = `Pembahasan: ${q.exp}`;
+                expBox.style.display = 'block';
+            }
+
+            // Atur Navigasi
+            document.getElementById('btnPrev').style.display = currentIdx > 0 ? 'block' : 'none';
+            document.getElementById('btnNext').style.display = (userAnswers[currentIdx] !== null && currentIdx < questions.length - 1) ? 'block' : 'none';
+            document.getElementById('btnFinish').style.display = (userAnswers[currentIdx] !== null && currentIdx === questions.length - 1) ? 'block' : 'none';
+        }
+
+        function selectOption(btn, selected, correct, exp) {
+            // 1. SISTEM FLAGGING: Blokir jika soal sudah terjawab di memori
+            if (userAnswers[currentIdx] !== null) return;
+
+            const isCorrect = (selected === correct);
+
+            // Simpan data jawaban sebagai objek
+            userAnswers[currentIdx] = { 
+                selected: selected, 
+                isCorrect: isCorrect 
+            };
+
+            const allOpts = document.querySelectorAll('.option');
+            allOpts.forEach(o => o.classList.add('disabled'));
+
+            if(isCorrect) {
+                btn.classList.add('correct');
+            } else {
+                btn.classList.add('incorrect');
+                allOpts.forEach(o => { if(o.innerText === correct) o.classList.add('correct'); });
+            }
+            
+            // Panggil fungsi Update Skor
+            updateScore();
+
+            const expBox = document.getElementById('explanationBox');
+            expBox.innerText = `Pembahasan: ${exp}`;
+            expBox.style.display = 'block';
+
+            if(currentIdx < questions.length - 1) document.getElementById('btnNext').style.display = 'block';
+            else document.getElementById('btnFinish').style.display = 'block';
+        }
+
+        function updateScore() {
+            // 4. PERHITUNGAN BERBASIS PERSENTASE
+            const correctCount = userAnswers.filter(ans => ans !== null && ans.isCorrect).length;
+            let calculatedScore = (correctCount / questions.length) * 100;
+
+            // 2. PENGGUNAAN FUNGSI PEMBATAS (LIMITER)
+            score = Math.min(Math.round(calculatedScore), 100);
+
+            document.getElementById('currentScore').innerText = score;
+        }
+
+        function nextQuestion() { currentIdx++; renderQuestion(); }
+        function prevQuestion() { currentIdx--; renderQuestion(); }
+
+        function finishQuiz() {
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            const date = new Date().toLocaleString('id-ID');
+            history.push({ name: userName, cls: userClass, score: score, time: date });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+            
+            alert(`Kuis Rampung! Skor Akhir: ${score}`);
+            window.location.reload(); // Kembali ke awal
+        }
+
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            const tbody = document.getElementById('historyBody');
+            tbody.innerHTML = history.map(h => 
+                `<tr><td>${h.name}</td><td>${h.cls}</td><td><b>${h.score}</b></td><td>${h.time}</td></tr>`
+            ).join('');
+        }
+
+        window.onload = loadHistory;
+    </script>
+</body>
+</html>

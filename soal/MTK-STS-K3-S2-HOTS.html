@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Matematika Kelas 3 - HOTS</title>
+    <style>
+        /* CSS Terpadu untuk Tampilan Menarik */
+        :root {
+            --primary-bg: #e0f7fa;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --btn-blue: #0288d1;
+            --btn-blue-hover: #0277bd;
+            --btn-green: #4caf50;
+            --btn-red: #f44336;
+            --footer-bg: #1a1a1a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            /* Proteksi Anti Copy-Paste */
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .header {
+            background-color: var(--btn-blue);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            border-top: 5px solid #ffeb3b;
+        }
+
+        h2 { text-align: center; color: var(--btn-blue); }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input { width: 100%; padding: 10px; border: 2px solid #b3e5fc; border-radius: 8px; box-sizing: border-box; }
+
+        .btn {
+            display: block; width: 100%; padding: 12px; margin-top: 10px;
+            border: none; border-radius: 8px; font-size: 1em; font-weight: bold;
+            cursor: pointer; transition: 0.3s; color: white; text-align: center; text-decoration: none;
+            box-sizing: border-box;
+        }
+        .btn-start { background-color: var(--btn-blue); }
+        .btn-start:hover { background-color: var(--btn-blue-hover); }
+        .btn-home { background-color: #ff9800; margin-bottom: 20px; }
+        .btn-home:hover { background-color: #f57c00; }
+        
+        .btn-option {
+            background-color: #f5f5f5; color: var(--text-main); text-align: left;
+            border: 2px solid #e0e0e0; margin-bottom: 10px;
+        }
+        .btn-option:hover { background-color: #e3f2fd; border-color: var(--btn-blue); }
+        .btn-option:disabled { cursor: not-allowed; }
+        
+        .correct { background-color: var(--btn-green) !important; color: white !important; border-color: var(--btn-green) !important; }
+        .wrong { background-color: var(--btn-red) !important; color: white !important; border-color: var(--btn-red) !important; }
+
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 20px; }
+        .nav-buttons button { width: 48%; }
+
+        .hidden { display: none !important; }
+
+        .history-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .history-table th, .history-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        .history-table th { background-color: var(--btn-blue); color: white; }
+
+        .pembahasan { background-color: #fff3e0; padding: 15px; border-left: 5px solid #ff9800; margin-top: 15px; border-radius: 5px; font-style: italic; }
+        
+        .score-display { font-size: 1.1em; font-weight: bold; text-align: center; margin-bottom: 15px; color: var(--btn-blue); }
+        
+        .question-image { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto; }
+
+        .footer {
+            background-color: var(--footer-bg); color: white; text-align: center; padding: 15px; font-size: 0.9em;
+        }
+        .footer a { color: #ffeb3b; text-decoration: none; font-weight: bold; }
+        .footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        Kode Soal: MTK-STS-K3-S2-HOTS
+    </div>
+
+    <div class="container">
+        <div id="login-screen" class="card">
+            <h2>Selamat Datang di Kuis Pintar!</h2>
+            <div class="form-group">
+                <label for="student-name">Nama Lengkap:</label>
+                <input type="text" id="student-name" placeholder="Masukkan nama kamu..." required>
+            </div>
+            <div class="form-group">
+                <label for="student-class">Kelas:</label>
+                <input type="text" id="student-class" placeholder="Contoh: 3A" required>
+            </div>
+            <button class="btn btn-start" onclick="startQuiz()">Mulai Kuis Sekarang</button>
+            <a href="../index.html" class="btn btn-home">Kembali ke Home</a>
+            
+            <h3>Riwayat Skor Kamu</h3>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Kelas</th>
+                        <th>Waktu</th>
+                        <th>Skor</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body">
+                    </tbody>
+            </table>
+        </div>
+
+        <div id="quiz-screen" class="card hidden">
+            <div class="score-display">Skor Sementara: <span id="current-score">0</span></div>
+            <h3 id="question-number">Soal 1 / 25</h3>
+            
+            <img id="question-img" class="question-image hidden" src="" alt="">
+            
+            <p id="question-text" style="font-size: 1.1em; font-weight: bold;"></p>
+            
+            <div id="options-container">
+                </div>
+
+            <div id="pembahasan-container" class="pembahasan hidden"></div>
+
+            <div class="nav-buttons">
+                <button id="btn-prev" class="btn btn-start" onclick="prevQuestion()" disabled>Soal Sebelumnya</button>
+                <button id="btn-next" class="btn btn-start hidden" onclick="nextQuestion()">Soal Selanjutnya</button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="card hidden">
+            <h2>Kuis Selesai! 🎉</h2>
+            <p style="text-align: center; font-size: 1.2em;">Nama: <span id="res-name" style="font-weight:bold;"></span></p>
+            <p style="text-align: center; font-size: 1.2em;">Kelas: <span id="res-class" style="font-weight:bold;"></span></p>
+            <div style="text-align: center; font-size: 3em; font-weight: bold; color: var(--btn-blue); margin: 20px 0;">
+                <span id="final-score">0</span> / 100
+            </div>
+            <button class="btn btn-start" onclick="location.reload()">Kembali ke Halaman Awal</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        &copy; <span id="current-year"></span> Oleh: Dwi Endrasto.<br>
+        Produk ini asli jika didapatkan/dibeli melalui 
+        <a href="https://lynk.id/smartbanksoal" target="_blank">https://lynk.id/smartbanksoal</a>
+    </div>
+
+    <script>
+        // --- PROTEKSI KEAMANAN ---
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('copy', event => {
+            event.clipboardData.setData('text/plain', 'Maaf, fitur salin teks dinonaktifkan untuk kuis ini.');
+            event.preventDefault();
+        });
+
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        const STORAGE_KEY = 'MTK_STS_K3_S2_HOTS_DATA';
+
+        // --- DATA SOAL ---
+        const soalDatabase = [
+            // 5 Soal Bergambar
+            {
+                q: "Perhatikan gambar atap rumah adat di atas. Jika kita menarik garis lurus dari ujung atap paling atas ke tanah, dan garis datar di sepanjang tanah, jenis garis apakah yang terbentuk dari pertemuan keduanya?",
+                img: "gambar/gambar_atap.jpg",
+                imgAlt: "Gambar atap rumah adat berbentuk segitiga dengan garis bantu vertikal dan horizontal",
+                opts: ["Garis yang saling tegak lurus", "Garis yang saling bersilangan", "Garis yang saling sejajar sama", "Garis yang saling berhimpitan"],
+                ans: "Garis yang saling tegak lurus",
+                bahas: "Garis tegak (vertikal) yang bertemu dengan garis datar (horizontal) akan membentuk sudut siku-siku, sehingga disebut garis tegak lurus."
+            },
+            {
+                q: "Andi menggambar denah jalan raya. Jalan Merpati dan Jalan Nuri membentang lurus tanpa pernah saling memotong meskipun diperpanjang. Bagaimana kedudukan dua jalan tersebut?",
+                img: "gambar/gambar_denah.jpg",
+                imgAlt: "Gambar denah dua jalan raya yang sejajar",
+                opts: ["Kedua jalan tersebut saling tegak", "Kedua jalan tersebut saling silang", "Kedua jalan tersebut saling sejajar", "Kedua jalan tersebut saling potong"],
+                ans: "Kedua jalan tersebut saling sejajar",
+                bahas: "Dua garis yang terletak pada satu bidang datar dan tidak akan pernah berpotongan meski diperpanjang disebut garis sejajar."
+            },
+            {
+                q: "Siti melihat rambu lalu lintas berbentuk seperti gambar di atas. Rambu tersebut memiliki sudut-sudut di setiap ujungnya. Jika diamati, jenis sudut apa yang terbentuk pada setiap titik sudut rambu itu?",
+                img: "gambar/gambar_rambu.jpg",
+                imgAlt: "Gambar rambu lalu lintas berbentuk segitiga sama sisi",
+                opts: ["Semua sudutnya adalah sudut lancip", "Semua sudutnya adalah sudut tumpul", "Semua sudutnya adalah sudut siku", "Terdapat sudut lancip dan tumpul"],
+                ans: "Semua sudutnya adalah sudut lancip",
+                bahas: "Rambu berbentuk segitiga sama sisi memiliki tiga sudut yang masing-masing besarnya kurang dari 90 derajat, yang disebut sudut lancip."
+            },
+            {
+                q: "Perhatikan gambar sepotong pizza berikut. Bagian pinggiran melengkung pizza disebut kurva, sedangkan dua sisi lurus yang bertemu di ujung disebut apa dalam unsur geometri?",
+                img: "gambar/gambar_pizza.jpg",
+                imgAlt: "Gambar sepotong pizza membentuk sudut",
+                opts: ["Dua ruas garis membentuk kurva", "Dua sinar garis membentuk sudut", "Dua titik potong membentuk garis", "Dua garis lurus membentuk bidang"],
+                ans: "Dua sinar garis membentuk sudut",
+                bahas: "Sebuah sudut dibentuk oleh dua sinar garis yang memiliki titik pangkal yang sama di ujungnya."
+            },
+            {
+                q: "Budi mengamati jendela kelasnya. Ia melihat bahwa sisi atas jendela dan sisi bawah jendela memiliki hubungan khusus. Pernyataan mana yang paling tepat menggambarkan sisi-sisi tersebut?",
+                img: "gambar/gambar_jendela.jpg",
+                imgAlt: "Gambar jendela berbentuk persegi panjang",
+                opts: ["Sisi atas dan bawah saling sejajar", "Sisi atas dan bawah tegak lurus", "Sisi atas dan bawah berpotongan", "Sisi atas dan bawah tidak searah"],
+                ans: "Sisi atas dan bawah saling sejajar",
+                bahas: "Pada bangun persegi panjang (seperti jendela), sisi yang saling berhadapan selalu memiliki kedudukan saling sejajar."
+            },
+            // 20 Soal Tanpa Gambar
+            {
+                q: "Doni menandai dua kota di peta dengan titik A dan titik B. Jika Doni menarik garis lurus lurus dari A ke B dan garis itu memiliki ujung di kedua titik tersebut, garis apakah yang dibuat Doni?",
+                opts: ["Sinar garis karena ujungnya terbatas", "Ruas garis karena dibatasi dua titik", "Garis lurus karena tidak ada batasan", "Garis lengkung karena di dalam peta"],
+                ans: "Ruas garis karena dibatasi dua titik",
+                bahas: "Garis yang memiliki pangkal dan ujung yang dibatasi oleh dua titik disebut ruas garis."
+            },
+            {
+                q: "Cahaya dari lampu senter memancar lurus ke depan menembus kegelapan. Konsep geometri apa yang paling sesuai untuk menggambarkan pancaran cahaya senter tersebut?",
+                opts: ["Ruas garis karena ada ujungnya", "Sinar garis karena ada pangkalnya", "Garis lurus karena batasnya jelas", "Titik sudut karena ada sumbernya"],
+                ans: "Sinar garis karena ada pangkalnya",
+                bahas: "Sinar garis memiliki satu titik pangkal (sumber cahaya) namun ujung lainnya memanjang tanpa batas."
+            },
+            {
+                q: "Ibu memotong kue bolu berbentuk persegi menjadi dua bagian yang sama besar secara diagonal. Berubah menjadi bangun datar apakah potongan kue tersebut dan berapa jumlah sudutnya sekarang?",
+                img: "gambar/gambar_kue.jpg",
+                imgAlt: "Gambar kue persegi dipotong diagonal",
+                opts: ["Segitiga dengan jumlah tiga sudut", "Persegi panjang berjumlah empat", "Trapesium dengan jumlah tiga sisi", "Layang-layang dengan empat sudut"],
+                ans: "Segitiga dengan jumlah tiga sudut",
+                bahas: "Persegi yang dipotong diagonalnya akan membagi bangun tersebut menjadi dua buah segitiga, masing-masing memiliki 3 sudut."
+            },
+            {
+                q: "Jarum jam dinding menunjukkan tepat pukul 09.00. Hubungan antara jarum pendek dan jarum panjang pada jam dinding tersebut membentuk jenis sudut apa?",
+                opts: ["Membentuk sebuah sudut tumpul", "Membentuk sebuah sudut lancip", "Membentuk sebuah sudut sikusiku", "Membentuk sebuah garis lurus saja"],
+                ans: "Membentuk sebuah sudut sikusiku",
+                bahas: "Pada pukul 09.00, jarak antar jarum adalah seperempat putaran penuh, yang secara tepat membentuk sudut siku-siku (90 derajat)."
+            },
+            {
+                q: "Dalam sebuah taman terdapat jalan setapak lurus. Jika kita menaruh sebuah pensil tegak lurus di atas jalan tersebut, manakah pernyataan yang benar mengenai hubungan pensil dan jalan?",
+                opts: ["Keduanya saling sejajar sempurna", "Keduanya akan membentuk silang", "Keduanya membentuk sudut siku", "Keduanya tidak memiliki pertemuan"],
+                ans: "Keduanya membentuk sudut siku",
+                bahas: "Dua benda yang saling tegak lurus berarti pertemuan antara keduanya akan tepat membentuk sudut siku-siku."
+            },
+            {
+                q: "Buku tulis Tina berbentuk persegi panjang. Ia membandingkannya dengan papan tulis di kelas yang juga persegi panjang. Apa kesamaan sifat dari kedua benda bangun datar tersebut?",
+                opts: ["Semua sisinya memiliki ukuran sama", "Memiliki empat sudut siku-siku pas", "Hanya memiliki dua buah titik sudut", "Tidak memiliki garis yang sejajar"],
+                ans: "Memiliki empat sudut siku-siku pas",
+                bahas: "Baik buku tulis maupun papan tulis (persegi panjang) memiliki 4 buah sudut yang semuanya merupakan sudut siku-siku."
+            },
+            {
+                q: "Sebuah layang-layang terbang di langit. Benang layang-layang ditarik lurus oleh Anton dari titik tempat ia berdiri. Titik tempat Anton berdiri dalam geometri disebut sebagai apa?",
+                opts: ["Sinar garis pada ujung benangnya", "Ruas garis antara Anton dan udara", "Garis lurus yang tidak akan putus", "Titik pangkal dari sebuah garis itu"],
+                ans: "Titik pangkal dari sebuah garis itu",
+                bahas: "Posisi Anton yang memegang ujung benang bertindak sebagai titik pangkal, sedangkan benang yang menjulur merepresentasikan garis."
+            },
+            {
+                q: "Rini melipat kertas origami berbentuk bujur sangkar menjadi bentuk segitiga. Jika ia menghitung jumlah sisi dari bentuk baru tersebut, berapakah jumlah ruas garis yang membentuk sisinya?",
+                opts: ["Hanya terdiri dari dua ruas garis", "Terdiri dari tepat tiga ruas garis", "Tetap berjumlah empat ruas garis", "Berubah menjadi lima ruas garis"],
+                ans: "Terdiri dari tepat tiga ruas garis",
+                bahas: "Kertas yang dilipat menjadi bentuk segitiga memiliki pinggiran yang terbentuk dari 3 buah ruas garis."
+            },
+            {
+                q: "Sudut pada ujung meja belajar biasanya dibuat melengkung agar tidak tajam, namun bentuk dasarnya sebelum dilengkungkan adalah sudut tegak. Disebut apakah sudut tegak tersebut?",
+                opts: ["Sudut tumpul yang lebih dari lurus", "Sudut lancip yang kecil dan tajam", "Sudut siku-siku dengan posisi tegak", "Sudut sembarang tanpa ukuran pas"],
+                ans: "Sudut siku-siku dengan posisi tegak",
+                bahas: "Pojok dari meja belajar standar yang lurus vertikal dan horizontal membentuk sudut 90 derajat atau siku-siku."
+            },
+            {
+                q: "Jika kamu membuka pintu lemari sedikit saja, jarak antara pintu dengan bingkai lemari membentuk sebuah sudut. Karena bukaan pintunya sempit, jenis sudut apakah yang terbentuk?",
+                opts: ["Membentuk sudut siku-siku pas", "Membentuk sudut yang amat tumpul", "Membentuk sebuah sudut lancip", "Membentuk sudut lurus ke samping"],
+                ans: "Membentuk sebuah sudut lancip",
+                bahas: "Bukaan pintu yang sempit dan kurang dari ukuran sudut siku-siku digolongkan sebagai sudut lancip."
+            },
+            {
+                q: "Sebuah anak tangga selalu dibuat sejajar satu sama lain. Mengapa garis-garis pada anak tangga tersebut harus memiliki kedudukan saling sejajar?",
+                opts: ["Agar anak tangga bisa berpotongan", "Agar pijakan kaki rata dan berjarak", "Agar ujungnya membentuk siku-siku", "Agar bentuknya terlihat melengkung"],
+                ans: "Agar pijakan kaki rata dan berjarak",
+                bahas: "Anak tangga sejajar memastikan jarak antar pijakan selalu sama dan tidak akan saling menempel (berpotongan), sehingga aman dinaiki."
+            },
+            {
+                q: "Lina menggambar huruf 'T' kapital di buku tulisnya. Hubungan antara garis mendatar di atas dan garis menurun di bawah pada huruf 'T' tersebut menunjukkan kedudukan garis apa?",
+                opts: ["Kedudukan garis saling sejajar rapi", "Kedudukan garis yang berhimpitan", "Kedudukan garis saling tegak lurus", "Kedudukan garis lurus tidak putus"],
+                ans: "Kedudukan garis saling tegak lurus",
+                bahas: "Garis horizontal dan vertikal pada huruf T bertemu dan membentuk sudut siku-siku, sehingga disebut tegak lurus."
+            },
+            {
+                q: "Ketika jarum jam menunjukkan pukul 04.00, sudut yang terbentuk oleh kedua jarum tersebut lebih besar dari sudut siku-siku namun belum membentuk garis lurus. Apa nama sudut itu?",
+                opts: ["Itu adalah contoh dari sudut lancip", "Itu adalah contoh dari sudut tumpul", "Itu adalah contoh sudut siku-siku", "Itu adalah contoh dari garis lurus"],
+                ans: "Itu adalah contoh dari sudut tumpul",
+                bahas: "Sudut yang besarnya lebih dari 90 derajat tetapi kurang dari 180 derajat disebut sudut tumpul."
+            },
+            {
+                q: "Rel kereta api terdiri dari dua batang besi yang panjang. Agar kereta dapat berjalan dengan aman dan tidak anjlok, bagaimana seharusnya kedudukan kedua besi rel tersebut dipasang?",
+                opts: ["Harus dipasang saling tegak lurus", "Harus dipasang saling bersilangan", "Harus dipasang sejajar selamanya", "Harus dipasang merapat ke tengah"],
+                ans: "Harus dipasang sejajar selamanya",
+                bahas: "Besi rel kereta api dipasang sejajar agar jarak antar keduanya selalu sama dan tidak berpotongan."
+            },
+            {
+                q: "Sebuah ubin lantai berbentuk segi enam beraturan. Jika Budi menunjuk satu pojok ubin tersebut, unsur bangun datar apa yang sedang ditunjuk oleh Budi?",
+                opts: ["Budi menunjuk sebuah ruas garis", "Budi menunjuk sebuah titik sudut", "Budi menunjuk bidang datar luas", "Budi menunjuk satu garis sejajar"],
+                ans: "Budi menunjuk sebuah titik sudut",
+                bahas: "Pojok dari sebuah bangun datar tempat bertemunya dua sisi dinamakan titik sudut."
+            },
+            {
+                q: "Bagas memotong bambu menjadi dua bagian. Batang bambu yang lurus tersebut melambangkan sebuah garis. Potongan bambu yang memiliki dua ujung tersebut kini disebut sebagai?",
+                opts: ["Sinar garis karena satu sisi tajam", "Garis lurus panjang tanpa batasan", "Ruas garis karena dibatasi ujung", "Titik potong pada tengah bambu"],
+                ans: "Ruas garis karena dibatasi ujung",
+                bahas: "Garis yang dibatasi oleh titik di kedua ujungnya (seperti potongan bambu) dinamakan ruas garis."
+            },
+            {
+                q: "Bangun datar trapesium sama kaki memiliki sepasang sisi yang memiliki kedudukan khusus yang berbeda dengan sisi lainnya. Apakah kedudukan dari sepasang sisi tersebut?",
+                opts: ["Sisi atas dan bawah saling sejajar", "Sisi miringnya saling tegak lurus", "Semua sisinya tidak ada yang sama", "Sisi atas dan miring saling sejajar"],
+                ans: "Sisi atas dan bawah saling sejajar",
+                bahas: "Pada trapesium, ciri utamanya adalah memiliki tepat satu pasang sisi yang berhadapan sejajar (biasanya sisi atas dan sisi alas/bawah)."
+            },
+            {
+                q: "Di lapangan basket, terdapat garis pinggir dan garis tengah. Jika diperpanjang, garis pinggir kiri dan garis pinggir kanan tidak akan bertemu. Apa nama kedudukan kedua garis pinggir itu?",
+                opts: ["Dua garis pinggir yang tegak lurus", "Dua garis pinggir yang bersilangan", "Dua garis pinggir yang berhimpitan", "Dua garis pinggir yang saling sejajar"],
+                ans: "Dua garis pinggir yang saling sejajar",
+                bahas: "Dua garis yang terletak pada satu bidang dan tidak akan berpotongan walau diperpanjang sejauh apapun disebut garis sejajar."
+            },
+            {
+                q: "Sari melihat lambang tanda tambah (+) di buku matematikanya. Lambang tersebut tersusun dari dua ruas garis. Berapakah jumlah sudut siku-siku yang terbentuk dari lambang tersebut?",
+                opts: ["Hanya terbentuk dua sudut siku-siku", "Terbentuk tepat tiga sudut siku-siku", "Terbentuk empat buah sudut siku", "Tidak ada sudut siku-siku terbentuk"],
+                ans: "Terbentuk empat buah sudut siku",
+                bahas: "Garis vertikal dan horizontal yang berpotongan lurus pada tanda (+) akan membentuk 4 daerah sudut yang semuanya merupakan sudut siku-siku."
+            },
+            {
+                q: "Ibu guru menggambar sebuah kurva tertutup lurus yang dibatasi oleh empat ruas garis, dengan semua sudutnya siku-siku dan semua sisinya sama panjang. Bangun apa yang digambar guru?",
+                opts: ["Guru menggambar persegi panjang", "Guru menggambar bangun persegi", "Guru menggambar sebuah belah ketupat", "Guru menggambar layang-layang"],
+                ans: "Guru menggambar bangun persegi",
+                bahas: "Bangun datar dengan 4 sisi sama panjang dan 4 sudut siku-siku adalah sifat pasti dari bangun persegi."
+            }
+        ];
+
+        // Variabel Status Kuis
+        let currentSoalIndex = 0;
+        let score = 0;
+        let questionOrder = [];
+        let startTime = "";
+        let studentData = { nama: "", kelas: "" };
+        let answeredQuestions = []; 
+
+        // Fungsi Load History
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            const tbody = document.getElementById('history-body');
+            tbody.innerHTML = '';
+            history.forEach(entry => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${entry.nama}</td><td>${entry.kelas}</td><td>${entry.waktu}</td><td>${entry.skor}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Fungsi Acak Array (Fisher-Yates)
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId);
+                curId -= 1;
+                let tmp = array[curId];
+                array[curId] = array[randId];
+                array[randId] = tmp;
+            }
+            return array;
+        }
+
+        function startQuiz() {
+            const nama = document.getElementById('student-name').value;
+            const kelas = document.getElementById('student-class').value;
+            if (!nama || !kelas) {
+                alert("Silakan isi nama dan kelas terlebih dahulu!");
+                return;
+            }
+
+            studentData.nama = nama;
+            studentData.kelas = kelas;
+            startTime = new Date().toLocaleString('id-ID');
+            
+            // 3. RESET VARIABEL SECARA MENYELURUH
+            currentSoalIndex = 0;
+            score = 0;
+            questionOrder = Array.from({length: soalDatabase.length}, (_, i) => i);
+            shuffleArray(questionOrder);
+            
+            // Persiapkan array memori dengan nilai null
+            answeredQuestions = new Array(soalDatabase.length).fill(null);
+
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            
+            updateScoreDisplay(); // Render skor awal 0
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const indexSoalAsli = questionOrder[currentSoalIndex];
+            const qData = soalDatabase[indexSoalAsli];
+            
+            document.getElementById('question-number').textContent = `Soal ${currentSoalIndex + 1} / ${soalDatabase.length}`;
+            document.getElementById('question-text').textContent = qData.q;
+            
+            // Atur Gambar jika ada
+            const imgEl = document.getElementById('question-img');
+            if (qData.img) {
+                imgEl.src = qData.img;
+                imgEl.alt = qData.imgAlt;
+                imgEl.classList.remove('hidden');
+            } else {
+                imgEl.classList.add('hidden');
+                imgEl.src = "";
+            }
+
+            // Acak pilihan jawaban
+            let opts = [...qData.opts];
+            shuffleArray(opts);
+
+            const optContainer = document.getElementById('options-container');
+            optContainer.innerHTML = '';
+            
+            // Sembunyikan pembahasan & tombol next
+            const bahasContainer = document.getElementById('pembahasan-container');
+            bahasContainer.classList.add('hidden');
+            bahasContainer.innerHTML = '';
+            document.getElementById('btn-next').classList.add('hidden');
+
+            // Cek status Flagging (apakah sudah dijawab di memori)
+            const hasAnswered = answeredQuestions[currentSoalIndex] !== null;
+
+            opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-option';
+                btn.textContent = opt;
+                
+                // Jika sudah dijawab, tampilkan mode Read-Only
+                if (hasAnswered) {
+                    btn.disabled = true;
+                    if (opt === qData.ans) btn.classList.add('correct');
+                    if (answeredQuestions[currentSoalIndex].selected === opt && opt !== qData.ans) {
+                        btn.classList.add('wrong');
+                    }
+                } else {
+                    btn.onclick = () => selectAnswer(btn, opt, qData);
+                }
+                optContainer.appendChild(btn);
+            });
+
+            if (hasAnswered) {
+                tampilkanPembahasan(qData);
+                document.getElementById('btn-next').classList.remove('hidden');
+            }
+
+            // Tombol Previous
+            document.getElementById('btn-prev').disabled = currentSoalIndex === 0;
+            
+            // Update teks tombol next
+            if (currentSoalIndex === soalDatabase.length - 1) {
+                document.getElementById('btn-next').textContent = "Selesai & Lihat Hasil";
+            } else {
+                document.getElementById('btn-next').textContent = "Soal Selanjutnya";
+            }
+        }
+
+        function selectAnswer(selectedBtn, selectedText, qData) {
+            // 1. SISTEM FLAGGING: Tolak interaksi jika soal ini sudah tercatat dijawab
+            if (answeredQuestions[currentSoalIndex] !== null) return;
+
+            const isCorrect = (selectedText === qData.ans);
+
+            // Simpan jejak jawaban dalam bentuk objek
+            answeredQuestions[currentSoalIndex] = {
+                selected: selectedText,
+                isCorrect: isCorrect
+            };
+
+            // Kunci semua tombol secara visual
+            const buttons = document.querySelectorAll('.btn-option');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent === qData.ans) {
+                    btn.classList.add('correct');
+                }
+            });
+
+            // Tandai jawaban yang salah secara visual
+            if (!isCorrect) {
+                selectedBtn.classList.add('wrong');
+            }
+
+            // Hitung ulang seluruh skor dengan metode aman
+            updateScoreDisplay();
+
+            // Tampilkan pembahasan
+            tampilkanPembahasan(qData);
+            document.getElementById('btn-next').classList.remove('hidden');
+        }
+
+        function updateScoreDisplay() {
+            // 4. PERHITUNGAN BERBASIS PERSENTASE
+            const correctCount = answeredQuestions.filter(ans => ans !== null && ans.isCorrect).length;
+            let calculatedScore = (correctCount / soalDatabase.length) * 100;
+
+            // 2. PENGGUNAAN LIMITER
+            score = Math.min(Math.round(calculatedScore), 100);
+
+            document.getElementById('current-score').textContent = score;
+        }
+
+        function tampilkanPembahasan(qData) {
+            const bahasContainer = document.getElementById('pembahasan-container');
+            bahasContainer.innerHTML = `<strong>Pembahasan:</strong><br>${qData.bahas}`;
+            bahasContainer.classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            if (currentSoalIndex < soalDatabase.length - 1) {
+                currentSoalIndex++;
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentSoalIndex > 0) {
+                currentSoalIndex--;
+                loadQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            const finalScore = Math.round(score);
+            
+            // Simpan ke localstorage
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            history.push({
+                nama: studentData.nama,
+                kelas: studentData.kelas,
+                waktu: startTime,
+                skor: finalScore
+            });
+            // Batasi 50 riwayat terakhir
+            if(history.length > 50) history.shift();
+            
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+
+            // Tampilkan layar hasil
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            
+            document.getElementById('res-name').textContent = studentData.nama;
+            document.getElementById('res-class').textContent = studentData.kelas;
+            document.getElementById('final-score').textContent = finalScore;
+        }
+
+        // Panggil saat pertama kali load
+        window.onload = loadHistory;
+    </script>
+</body>
+</html>

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis IND-STS-K3-S2-HOTS</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f39c12;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --dark-bg: #1a1a1a;
+            --light-bg: #f4f7f6;
+        }
+
+        /* Proteksi dasar CSS */
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            flex: 1;
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 90%;
+        }
+
+        .header-code {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        /* Tampilan Login */
+        #login-screen {
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            padding: 40px 20px;
+            border-radius: 15px;
+            border: 2px dashed #4a90e2;
+        }
+
+        input[type="text"], select {
+            width: 80%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            margin: 10px;
+            font-size: 16px;
+            display: inline-block;
+        }
+
+        .btn-start { background-color: var(--success-color); color: white; width: 80%; }
+        .btn-start:hover { background-color: #219653; }
+        .btn-home { background-color: #95a5a6; color: white; text-decoration: none; width: 80%; }
+        .btn-nav { background-color: var(--primary-color); color: white; }
+        .btn-prev { background-color: var(--secondary-color); color: white; }
+
+        /* Tampilan Kuis */
+        #quiz-container { display: none; }
+        .question-box { margin: 20px 0; text-align: left; }
+        #question-text { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; }
+        
+        .options-container { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 20px; }
+        .option-btn {
+            padding: 15px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+        
+        .correct { background-color: var(--success-color) !important; color: white !important; border-color: var(--success-color); }
+        .wrong { background-color: var(--error-color) !important; color: white !important; border-color: var(--error-color); }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f4fd;
+            border-left: 5px solid var(--primary-color);
+            display: none;
+            text-align: left;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+
+        .img-container { margin: 15px 0; max-width: 100%; text-align: center; }
+        .img-container img { max-width: 100%; border-radius: 8px; height: auto; max-height: 250px; border: 1px solid #ddd; }
+
+        /* Riwayat Skor */
+        #history-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            max-height: 200px;
+            overflow-y: auto;
+            text-align: left;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .history-item { border-bottom: 1px solid #eee; padding: 5px 0; font-size: 0.9rem; }
+
+        footer {
+            background-color: var(--dark-bg);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+        footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body oncontextmenu="return false;" oncopy="return false" oncut="return false" onpaste="return false">
+
+<div class="container">
+    <div class="header-code">IND-STS-K3-S2-HOTS</div>
+
+    <div id="login-screen">
+        <h2 style="color: #2c3e50; margin-top:0;">Kuis Bahasa Indonesia</h2>
+        <input type="text" id="username" placeholder="Masukkan Nama Lengkap" autocomplete="off">
+        <select id="userclass">
+            <option value="">-- Pilih Kelas --</option>
+            <option value="3A">Kelas 3A</option>
+            <option value="3B">Kelas 3B</option>
+            <option value="3C">Kelas 3C</option>
+        </select>
+        
+        <button id="btn-mulai" class="btn btn-start">Mulai Kuis</button>
+        <a href="../index.html" class="btn btn-home">Kembali ke Home</a>
+
+        <div id="history-section">
+            <h4 style="margin-top:0;">Riwayat Skor Pengerjaan:</h4>
+            <div id="history-list">Belum ada riwayat.</div>
+        </div>
+    </div>
+
+    <div id="quiz-container">
+        <div style="display: flex; justify-content: space-between; font-weight: bold; border-bottom: 2px solid #ddd; padding-bottom: 10px;">
+            <span id="q-count">Soal 1/25</span>
+            <span id="live-score" style="color: var(--primary-color);">Skor: 0</span>
+        </div>
+        
+        <div class="question-box">
+            <div id="question-text">Teks soal akan muncul di sini</div>
+            <div id="image-area" class="img-container"></div>
+            <div id="options-area" class="options-container"></div>
+        </div>
+        
+        <div id="explanation-box" class="explanation"></div>
+        
+        <div style="margin-top: 25px; display: flex; justify-content: space-between;">
+            <button id="prev-btn" class="btn btn-prev" style="display:none; margin:0;">Kembali</button>
+            <button id="next-btn" class="btn btn-nav" style="display:none; margin:0;">Selanjutnya</button>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>©<span id="year"></span> Oleh: Dwi Endrasto</p>
+    <p>Asli jika didapatkan/dibeli melalui:<br>
+       <a href="https://lynk.id/smartbanksoal" target="_blank">https://lynk.id/smartbanksoal</a>
+    </p>
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    
+    // Konfigurasi ID Penyimpanan agar tidak bentrok dengan kuis lain
+    const STORAGE_KEY = 'KUIS_INDO_K3_S2_HOTS_2026';
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // BANK SOAL (25 Soal Lengkap sesuai Kisi-kisi)
+    const bankSoal = [
+        {
+            q: "Perhatikan gambar buku resep di bawah ini. Informasi pokok yang dapat ditemukan adalah...",
+            options: ["Cara membuat kue", "Cara membeli baju", "Cara main bola", "Cara menanam padi"],
+            correct: 0,
+            exp: "Gambar resep menunjukkan langkah-langkah pembuatan makanan (Bab 5).",
+            img: "gambar/gambar_soal_1.jpg", imgDesc: "Gambar buku resep bola-bola cokelat"
+        },
+        {
+            q: "Berdasarkan poster promosi di samping, hal paling menarik bagi pembeli adalah...",
+            options: ["Harga diskon besar", "Warna kertas kusam", "Bentuk tulisan kecil", "Nama toko panjang"],
+            correct: 0,
+            exp: "Diskon atau potongan harga adalah daya tarik utama dalam poster promosi.",
+            img: "gambar/gambar_soal_2.jpg", imgDesc: "Poster diskon makanan"
+        },
+        {
+            q: "Ada seorang anak yang menangis di keramaian. Masalah yang dialami tokoh adalah...",
+            options: ["Tersesat di jalan", "Mendapat hadiah", "Membeli mainan", "Bertemu temannya"],
+            correct: 0,
+            exp: "Menangis di tempat asing menunjukkan masalah tersesat atau terpisah dari orang tua (Bab 6).",
+            img: "gambar/gambar_soal_3.jpg", imgDesc: "Anak menangis di pasar"
+        },
+        {
+            q: "Lihat denah pasar ini. Jika kamu tersesat, tempat pertama yang harus dituju adalah...",
+            options: ["Pos pusat keamanan", "Toko mainan anak", "Kamar mandi umum", "Pintu keluar area"],
+            correct: 0,
+            exp: "Pos keamanan adalah tempat paling aman untuk meminta bantuan saat tersesat.",
+            img: "gambar/gambar_soal_4.jpg", imgDesc: "Denah lokasi pasar"
+        },
+        {
+            q: "Gambar ini menunjukkan sebuah pekerjaan. Tugas utama dari pekerjaan tersebut adalah...",
+            options: ["Menjaga keamanan area", "Memasak makanan enak", "Membersihkan ruangan", "Menjual pakaian baru"],
+            correct: 0,
+            exp: "Satpam bertugas menjaga keamanan dan ketertiban area (Bab 6).",
+            img: "gambar/gambar_soal_5.jpg", imgDesc: "Petugas satpam berjaga"
+        },
+        // 20 Soal Tanpa Gambar (Soal 6-25)
+        { q: "Teks narasi tentang pembuatan bola-bola cokelat memiliki ide pendukung berupa...", options: ["Alat dan bahannya", "Harga jual produk", "Sejarah asal kue", "Nama toko kue"], correct: 0, exp: "Ide pendukung dalam teks resep adalah rincian alat dan bahan yang digunakan." },
+        { q: "Dalam wawancara tentang cara membuat kue, pertanyaan yang paling tepat adalah...", options: ["Bagaimana proses membuatnya?", "Berapa lama bapak tidur?", "Di mana rumah ibu?", "Siapa nama kucingmu?"], correct: 0, exp: "Pertanyaan harus relevan dengan topik wawancara yaitu pembuatan kue." },
+        { q: "Ketika berbicara dengan narasumber yang lebih tua, sikap kita seharusnya...", options: ["Santun dan jelas", "Kasar dan cepat", "Pelan tak terdengar", "Sambil tertawa lepas"], correct: 0, exp: "Sikap santun dan volume jelas sangat penting saat melakukan wawancara." },
+        { q: "Rano ingin membuat kalimat promosi yang menarik. Kalimat yang tepat adalah...", options: ["Beli bola cokelat ini!", "Cokelat ini rasanya pahit.", "Jangan beli kue ini.", "Kue ini sudah kedaluwarsa."], correct: 0, exp: "Kalimat promosi harus bersifat mengajak (persuasif)." },
+        { q: "Jika kamu mendengar pengumuman anak hilang di swalayan, tindakan yang benar adalah...", options: ["Menyimak dengan saksama", "Menutup telinga rapat", "Berlari menjauhi suara", "Berteriak sangat kencang"], correct: 0, exp: "Menyimak informasi penting membantu kita mengambil sikap yang tepat." },
+        { q: "Kata 'Promosi' memiliki arti yang sama (sinonim) dengan kata...", options: ["Penawaran", "Penyimpanan", "Pembelian", "Pengiriman"], correct: 0, exp: "Promosi berarti menawarkan atau memperkenalkan produk." },
+        { q: "Bagian penting yang harus ada dalam laporan hasil wawancara adalah...", options: ["Nama dari narasumber", "Warna baju pewawancara", "Cuaca hari sebelumnya", "Harga sepatu narasumber"], correct: 0, exp: "Nama narasumber wajib dicantumkan dalam laporan hasil wawancara." },
+        { q: "Manakah yang merupakan kalimat larangan di tempat umum?", options: ["Dilarang membuang sampah!", "Ayo bersihkan lantai!", "Mari kita pulang!", "Silakan duduk manis!"], correct: 0, exp: "Kata 'Dilarang' atau 'Jangan' adalah ciri khas kalimat larangan." },
+        { q: "Cara paling mudah mencari arti sebuah kata baru di internet adalah melalui...", options: ["Mesin pencari Google", "Aplikasi edit foto", "Kalkulator digital", "Aplikasi pemutar musik"], correct: 0, exp: "Google adalah mesin pencari untuk menemukan definisi kata." },
+        { q: "Saat tersesat, memberikan informasi yang jelas kepada petugas sangat penting agar...", options: ["Cepat ditemukan keluarga", "Diberi banyak makanan", "Masuk ke televisi", "Menjadi sangat terkenal"], correct: 0, exp: "Informasi yang jelas membantu petugas mempercepat pencarian." },
+        { q: "Orang yang bekerja memberikan informasi kepada pengunjung melalui pelantang suara disebut...", options: ["Pusat bagian informasi", "Petugas parkir kendaraan", "Kasir toko swalayan", "Pemilik pusat belanja"], correct: 0, exp: "Bagian informasi bertugas mengumumkan berita melalui pengeras suara." },
+        { q: "Media pemberitahuan berukuran besar yang biasa dipasang di pinggir jalan disebut...", options: ["Baliho", "Brosur", "Koran", "Majalah"], correct: 0, exp: "Baliho adalah papan reklame besar di jalanan." },
+        { q: "Kalimat dalam poster sebaiknya ditulis dengan...", options: ["Singkat dan sangat jelas", "Panjang dan bertele-tele", "Huruf yang sangat kecil", "Warna yang tidak jelas"], correct: 0, exp: "Poster dibaca sambil lalu, jadi kalimatnya harus singkat dan jelas." },
+        { q: "Tujuan utama membaca teks narasi dengan saksama adalah...", options: ["Memahami seluruh informasi", "Menghafal jumlah hurufnya", "Mencari kesalahan ketik", "Meniru gaya penulisnya"], correct: 0, exp: "Membaca saksama bertujuan memahami isi bacaan." },
+        { q: "Pernyataan yang TIDAK SESUAI dengan langkah membuat bola cokelat adalah...", options: ["Merebus tepung terigu", "Menghaluskan biskuit", "Mencairkan cokelat", "Mendinginkan adonan"], correct: 0, exp: "Bola cokelat tidak menggunakan rebusan tepung terigu (Bab 5)." },
+        { q: "Tokoh utama dalam cerita merasa takut saat tersesat karena...", options: ["Suasana sangat ramai", "Banyak makanan enak", "Melihat badut lucu", "Bertemu teman sekolah"], correct: 0, exp: "Keramaian tanpa orang dikenal membuat anak kecil merasa takut (Bab 6)." },
+        { q: "Saat tersesat, data diri yang wajib dihafal untuk diberitahukan ke petugas adalah...", options: ["Nama lengkap sendiri", "Nama hewan peliharaan", "Merek baju yang dipakai", "Warna sepatu teman"], correct: 0, exp: "Nama lengkap dan alamat adalah data dasar saat tersesat." },
+        { q: "Media promosi berupa selebaran kertas yang dibagikan langsung kepada orang disebut...", options: ["Brosur", "Spanduk", "Televisi", "Radio"], correct: 0, exp: "Brosur atau pamflet adalah media promosi cetak yang dibagikan." },
+        { q: "Kata 'Instruksi' paling tepat digunakan saat...", options: ["Memberikan sebuah perintah", "Menanyakan sebuah kabar", "Menyapa seorang teman", "Meminta maaf tulus"], correct: 0, exp: "Instruksi berarti perintah atau arahan untuk melakukan sesuatu." },
+        { q: "Sikap yang baik setelah berhasil dibantu petugas saat tersesat adalah...", options: ["Mengucapkan terima kasih", "Berlari secepat mungkin", "Diam seribu bahasa", "Menangis makin keras"], correct: 0, exp: "Sopan santun mewajibkan kita berterima kasih setelah ditolong." }
+    ];
+
+    // Variabel Global Kuis yang Lebih Aman
+    let soalDiacak = [];
+    let indeksSoal = 0;
+    let skorAktif = 0;
+    let jawabanPengguna = []; // MENAMBAHKAN ARRAY PENYIMPAN STATUS (Flagging)
+
+    // FUNGSI 1: Tampilkan Riwayat
+    function muatRiwayat() {
+        const riwayat = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        const listDOM = document.getElementById('history-list');
+        if (riwayat.length === 0) return;
+        
+        listDOM.innerHTML = riwayat.reverse().map(item => 
+            `<div class="history-item">
+                <strong>${item.nama}</strong> (${item.kelas})<br>
+                Skor: <span style="color:var(--success-color); font-weight:bold;">${item.skor}</span> | Waktu: ${item.waktu}
+            </div>`
+        ).join('');
+    }
+    
+    muatRiwayat();
+
+    // FUNGSI 2: Mulai Kuis (Event Listener)
+    document.getElementById('btn-mulai').addEventListener('click', function() {
+        const nama = document.getElementById('username').value.trim();
+        const kelas = document.getElementById('userclass').value;
+        
+        if (nama === "" || kelas === "") {
+            alert("Halo! Silakan isi Nama Lengkap dan pilih Kelas terlebih dahulu ya.");
+            return;
+        }
+
+        // 3. RESET VARIABEL SECARA MENYELURUH
+        indeksSoal = 0;
+        skorAktif = 0;
+
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('quiz-container').style.display = 'block';
+
+        // Acak Soal dan Opsi (Deep Copy agar aman)
+        soalDiacak = JSON.parse(JSON.stringify(bankSoal));
+        soalDiacak.sort(() => Math.random() - 0.5);
+        
+        soalDiacak.forEach(soal => {
+            // Simpan teks jawaban yang benar sebelum opsi diacak
+            soal.teksJawabanBenar = soal.options[soal.correct];
+            soal.options.sort(() => Math.random() - 0.5); // Acak opsi
+        });
+
+        // Siapkan array pelacak sepanjang jumlah soal
+        jawabanPengguna = new Array(soalDiacak.length).fill(null);
+
+        updateSkorDisplay(); // Render skor 0
+        tampilkanSoal();
+    });
+
+    // FUNGSI 3: Render Soal
+    function tampilkanSoal() {
+        const soalKini = soalDiacak[indeksSoal];
+        
+        document.getElementById('q-count').textContent = `Soal ${indeksSoal + 1}/${soalDiacak.length}`;
+        document.getElementById('question-text').textContent = soalKini.q;
+        
+        const imgArea = document.getElementById('image-area');
+        if (soalKini.img) {
+            imgArea.innerHTML = `<img src="${soalKini.img}" alt="${soalKini.imgDesc}"><p style="font-size:0.8rem; color:#666;">${soalKini.imgDesc}</p>`;
+        } else {
+            imgArea.innerHTML = '';
+        }
+
+        // Tampilkan/Sembunyikan tombol navigasi 'Kembali'
+        document.getElementById('prev-btn').style.display = indeksSoal > 0 ? 'block' : 'none';
+        
+        if (indeksSoal === soalDiacak.length - 1) {
+            document.getElementById('next-btn').textContent = "Selesai & Simpan Skor";
+        } else {
+            document.getElementById('next-btn').textContent = "Selanjutnya";
+        }
+
+        const optionsArea = document.getElementById('options-area');
+        optionsArea.innerHTML = '';
+
+        // Render Pilihan Jawaban
+        soalKini.options.forEach(teksOpsi => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.textContent = teksOpsi;
+            
+            btn.addEventListener('click', function() {
+                cekJawaban(teksOpsi, btn);
+            });
+            
+            optionsArea.appendChild(btn);
+        });
+
+        // CEK FLAGGING: Jika soal ini sudah pernah dijawab (misal saat klik "Kembali")
+        if (jawabanPengguna[indeksSoal] !== null) {
+            // Tampilkan visual yang sudah terkunci, tidak bisa dijawab lagi
+            tampilkanPembahasanVisual(jawabanPengguna[indeksSoal].selected);
+        } else {
+            // Soal baru, sembunyikan penjelasan dan tombol next
+            document.getElementById('explanation-box').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+        }
+    }
+
+    // FUNGSI 4: Cek Jawaban
+    function cekJawaban(jawabanDipilih, tombolDitekan) {
+        // 1. SISTEM FLAGGING: Jika sudah terisi di memori, tolak kliknya!
+        if (jawabanPengguna[indeksSoal] !== null) return;
+
+        const soalKini = soalDiacak[indeksSoal];
+        const isBenar = (jawabanDipilih === soalKini.teksJawabanBenar);
+
+        // Catat di memori
+        jawabanPengguna[indeksSoal] = {
+            selected: jawabanDipilih,
+            isCorrect: isBenar
+        };
+
+        // Hitung ulang seluruh skor
+        updateSkorDisplay();
+        
+        // Tampilkan warna benar/salah
+        tampilkanPembahasanVisual(jawabanDipilih);
+    }
+
+    // Fungsi Tambahan untuk Render Visual Jawaban
+    function tampilkanPembahasanVisual(jawabanDipilih) {
+        const soalKini = soalDiacak[indeksSoal];
+        const semuaTombol = document.querySelectorAll('.option-btn');
+        
+        // Kunci semua tombol dan beri warna
+        semuaTombol.forEach(btn => {
+            btn.disabled = true; // Kunci agar tidak bisa diklik ulang
+            
+            if (btn.textContent === soalKini.teksJawabanBenar) {
+                btn.classList.add('correct');
+            } else if (btn.textContent === jawabanDipilih && jawabanDipilih !== soalKini.teksJawabanBenar) {
+                btn.classList.add('wrong');
+            }
+        });
+
+        // Tampilkan pembahasan
+        const expBox = document.getElementById('explanation-box');
+        expBox.innerHTML = `Pembahasan: ${soalKini.exp}`;
+        expBox.style.display = 'block';
+        
+        // Munculkan tombol selanjutnya
+        document.getElementById('next-btn').style.display = 'block';
+    }
+
+    // FUNGSI BARU: Update Skor Berbasis Persentase & Limiter
+    function updateSkorDisplay() {
+        // 4. PERHITUNGAN BERBASIS PERSENTASE
+        const jumlahBenar = jawabanPengguna.filter(j => j !== null && j.isCorrect).length;
+        let skorHitung = (jumlahBenar / soalDiacak.length) * 100;
+
+        // 2. PENGGUNAAN LIMITER
+        skorAktif = Math.min(Math.round(skorHitung), 100);
+        
+        document.getElementById('live-score').textContent = `Skor: ${skorAktif}`;
+    }
+
+    // FUNGSI 5: Navigasi Selanjutnya
+    document.getElementById('next-btn').addEventListener('click', function() {
+        if (indeksSoal < soalDiacak.length - 1) {
+            indeksSoal++;
+            tampilkanSoal();
+        } else {
+            akhiriKuis();
+        }
+    });
+
+    // FUNGSI 6: Navigasi Sebelumnya
+    document.getElementById('prev-btn').addEventListener('click', function() {
+        if (indeksSoal > 0) {
+            indeksSoal--;
+            tampilkanSoal(); // Akan otomatis me-render status Read-Only berkat sistem Flagging
+        }
+    });
+
+    // FUNGSI 7: Selesai
+    function akhiriKuis() {
+        const nama = document.getElementById('username').value;
+        const kelas = document.getElementById('userclass').value;
+        
+        const now = new Date();
+        const waktuStr = now.toLocaleDateString('id-ID') + " " + now.toLocaleTimeString('id-ID');
+
+        const riwayatBaru = { nama: nama, kelas: kelas, skor: skorAktif, waktu: waktuStr };
+        
+        // 1. Simpan ke local storage khusus riwayat kuis ini saja
+        const dataLama = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        dataLama.push(riwayatBaru);
+        
+        // Simpan max 50 riwayat
+        if(dataLama.length > 50) dataLama.shift();
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataLama));
+
+        // 2. MODIFIKASI: Simpan juga ke 'dataKuis' agar bisa dibaca oleh rekap.html
+        const riwayatGlobalBaru = { 
+            nama: nama, 
+            kelas: kelas, 
+            mapel: "IND-STS-K3-S2-HOTS", 
+            nilai: skorAktif, 
+            waktu: waktuStr 
+        };
+        const dataGlobalLama = JSON.parse(localStorage.getItem('dataKuis') || "[]");
+        dataGlobalLama.push(riwayatGlobalBaru);
+        localStorage.setItem('dataKuis', JSON.stringify(dataGlobalLama));
+
+        alert(`Hebat ${nama}! Kuis telah selesai.\nSkor akhir kamu adalah: ${skorAktif}`);
+        
+        window.location.reload();
+    }
+
+});
+</script>
+
+</body>
+</html>
