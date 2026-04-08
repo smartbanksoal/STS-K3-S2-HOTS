@@ -1,12 +1,13 @@
 // 1. UBAH VERSI CACHE DI SINI (Naikkan menjadi v2)
-const CACHE_NAME = 'STS-K3-S2-HOTS-v1';
+const CACHE_NAME = 'STS-K3-S2-HOTS-v2';
 
 const urlsToCache = [
   './index.html',
   './icon-512.png',
   './baner-sbs.png',
   './rekap.html',
-   './install.html',
+  './install.html',
+  './manifest.json',
   
   // Daftar file :
   '/soal/IND-STS-K3-S2-HOTS.html',
