@@ -6,6 +6,7 @@ const urlsToCache = [
   './icon-512.png',
   './baner-sbs.png',
   './rekap.html',
+   './install.html',
   
   // Daftar file :
   '/soal/IND-STS-K3-S2-HOTS.html',
